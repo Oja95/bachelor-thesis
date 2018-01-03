@@ -1,0 +1,144 @@
+\documentclass{style/thesis}
+\input{macros/macros}
+
+% BEGIN DOCUMENT
+\begin{document}
+
+% BEGIN TITLE PAGE
+\thispagestyle{empty}
+\begin{center}
+
+\large
+UNIVERSITY OF TARTU\\[2mm]
+Institute of Computer Science\\
+Computer Science Curriculum\\[2mm]
+
+\vspace{25mm}
+
+\Large Tiit Oja
+
+\vspace{4mm}
+
+\huge \articleName
+
+\vspace{20mm}
+
+\Large Bachelor's Thesis (9 ECTS)
+
+\end{center}
+
+\vspace{2mm}
+
+\begin{flushright}
+ {
+ \setlength{\extrarowheight}{5pt}
+ \begin{tabular}{r l} 
+  \sffamily Supervisor: & \sffamily Vootele Rõtov, MSc \\
+  \sffamily Supervisor: & \sffamily Vesal Vodjani, PhD
+ \end{tabular}
+ }
+\end{flushright}
+
+\vfill
+\centerline{Tartu 2018}
+
+% END TITLE PAGE
+
+% Remember to remove this from the final thesis version
+\pagebreak
+\listoftodos[Ohboy, there's stuff to do]
+% END OF TODO PAGE 
+
+% COMPULSORY INFO PAGE
+\pagebreak
+
+\selectlanguage{english}
+\noindent\textbf{\large \articleName}
+\vspace*{3ex}
+\begin{flushleft}
+  \textbf{Abstract:} 
+\TODO{One or two sentences providing a basic introduction to the field, comprehensible to a scientist in
+any discipline.}
+\TODO{Two to three sentences of
+more detailed background, comprehensible to scientists in related disciplines.}
+\TODO{One sentence clearly stating the general problem being addressed by this particular
+study.}
+\TODO{One sentence summarising the main result (with the words here we show or their equivalent).}
+\TODO{Two or three sentences explaining what
+the main result reveals in direct
+comparison to what was thought to be the case previously, or how the main result adds to previous knowledge.}
+\TODO{One or two sentences to put the results into a more general context.}
+\TODO{Two or three sentences to provide a
+broader perspective, readily
+comprehensible to a scientist in any
+discipline, may be included in the first paragraph
+if the editor considers that the accessibility of
+the paper is significantly enhanced by their inclusion.}
+\end{flushleft}
+
+
+\vspace*{3ex}
+\begin{flushleft}
+  \textbf{Keywords:} \TODO{List of keywords}
+\end{flushleft}
+\vspace*{3ex}
+
+\noindent\textbf{CERCS:} \TODO{CERCS kood ja nimetus:~\url{https://www.etis.ee/Portal/Classifiers/Details/d3717f7b-bec8-4cd9-8ea4-c89cd56ca46e}}
+\selectlanguage{estonian}
+
+\vspace*{5ex}
+\noindent\textbf{\large \articleNameEE}
+\vspace*{3ex}
+
+\begin{flushleft}
+  \textbf{Lühikokkuvõte:}
+  \TODO{Abstract in estonian}
+\end{flushleft}
+\vspace*{3ex}
+
+\begin{flushleft}
+  \textbf{Võtmesõnad:} 
+\end{flushleft}
+\vspace*{3ex}
+
+\noindent\textbf{CERCS:} 
+
+\newpage
+
+\selectlanguage{english}
+\tableofcontents
+
+\newpage
+%Introduction
+\section{Introduction}
+\subfile{introduction/introduction.tex}
+
+\pagebreak
+
+\TODO{Actually do the bachelor thesis here}
+
+
+\clearpage
+\section{Conclusion} 
+
+\subfile{conclusion/conclusion.tex}
+
+\newpage
+
+\bibliography{thesis}{}
+\bibliographystyle{plain}
+
+\newpage
+
+\appendix
+\section*{Appendecies}
+\addcontentsline{toc}{section}{Appendecies}
+% So that appendecies would be named by letters
+\renewcommand{\thesubsection}{\Alph{subsection}}
+\subfile{appendix/appendix.tex}
+\pagebreak
+\section*{\small Non-exclusive licence to reproduce thesis and make thesis public}
+
+\TODO{License}
+
+\end{document}
