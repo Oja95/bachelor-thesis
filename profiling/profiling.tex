@@ -1,0 +1,68 @@
+%!TEX root = ../thesis.tex
+\documentclass[..thesis.tex]{subfiles}
+
+\begin{document}
+
+\TODO{Some points to expand on later. Ideas from Nitsan Wakart: https://www.youtube.com/watch?v=pXV4pY42FtM}
+\begin{enumerate}
+	\item Sampling profilers sample program on an interval
+	\item Assumption is that samples are taken randomly (referring to safe spots casting a shade on the randomness assumption)
+	\item Distribution of samples highlights hotspots: sample distribution corresponds to 'time spent\' - Show a flamegraph to clarify this point.
+	\item Reach to a conclusion that sample count is very important for the result to provide an actual overview of the application performance
+	\item Periodicity bias - same interval sample might catch on to some routine that matches the application thus providing biased samples
+\end{enumerate}
+
+
+\subsection{\texttt{AsyncGetCallTrace} profilers}
+These kind of profilers make use of an undocumented JVM method \texttt{AsyncGetCallTrace} \cite{agct_source} which enables obtaining call traces from a thread without the \textit{safe point} bias. Due to this characteristic, profiling samples tend to be more 'honest' since the JVM does not have to stop on a safepoint in order to obtain the call trace of the running thread.
+
+Notable examples of such profilers are Honest Profiler and Java Mission Control. \TODO{Citation needed}
+
+Points to expand on:
+\begin{enumerate}
+	\item Sends interrupt signal to thread and then runs signal handler to collect the stack trace. Only interrupted thread is stopped.
+	\item Does not require the thread to be stopped on a safepoint.
+	\item Shows only Java stack. (Most problems can be solved on Java level - Nitsan Wakart)
+	\item Only operations on CPU are sampled. Blocking/concurrency issues won't be spotted.
+\end{enumerate}
+
+\TODO{Pros and cons}
+
+\subsubsection{Honest Profiler}
+Honest Profiler \cite{hon_prof} is an open source software written in Java and C++ which aims to gather honest and accurate samples from a running Java application. 
+%Its profiling approach significantly differs from the traditional Java profilers.
+
+
+\subsubsection{Safepoints}
+
+OpenJDK's glossary \cite{jdk_glossary} defines \textit{safepoint} as follows: 
+\begin{quote}
+A point during program execution at which all GC roots are known and all heap object contents are consistent. From a global point of view, all threads must block at a safepoint before the GC can run. (As a special case, threads running JNI code can continue to run, because they use only handles. During a safepoint they must block instead of loading the contents of the handle.) From a local point of view, a safepoint is a distinguished point in a block of code where the executing thread may block for the GC. Most call sites qualify as safepoints. There are strong invariants which hold true at every safepoint, which may be disregarded at non-safepoints. Both compiled Java code and C/C++ code be optimized between safepoints, but less so across safepoints. The JIT compiler emits a GC map at each safepoint. C/C++ code in the VM uses stylized macro-based conventions (e.g., TRAPS) to mark potential safepoints.
+\end{quote}
+
+\begin{quote}
+At a safepoint the thread's representation of it's Java machine state is well described, and can be safely manipulated and observed by other threads in the JVM. - Gil Tene
+\end{quote}
+
+Some points to expand on
+\begin{enumerate}
+	\item Implementation detail of the language - is not precisely described in the language specifications.
+	\item JVM raises a flag to notify threads to stop on safepoint and then waits the threads to stop on a safepoint. Thread polls for safepoint flag after every 2 bytecode instructions (when in interpreter), end of non-counted loop, method exit, JNI call exit(C1/C2 compiled code), 
+\end{enumerate}
+
+\subsection{\texttt{GetStackTrace} profilers}
+This method uses function from the official JVM Tooling Interface API \cite{jvmti_doc} called \texttt{GetStackTrace}.
+
+Some points to expand on:
+\begin{enumerate}
+	\item Safepoint biased. Requires all the threads to be stopped on a safepoint in order top collect call traces
+	\item Has higher overhead when compared to other methods. Application having many threads might take a long time for all the threads to reach a safepoint.
+\end{enumerate}
+
+\subsection{Native profilers}
+
+
+
+
+
+\end{document}
