@@ -139,3 +139,5 @@
 
 % smart spaces
 \usepackage{xspace}
+
+\usepackage{tikz,pgfplots}
