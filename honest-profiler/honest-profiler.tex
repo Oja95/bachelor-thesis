@@ -13,11 +13,21 @@ Its profiling approach significantly differs from the traditional Java profilers
 \TODO{Decide on the style to use for 'Honest Profiler'}
 Current implementation of Honest Profiler makes use of the standard interval timer from GNU time library and UNIX Operating System signals to periodically call the \texttt{AsyncGetCallTrace} method. This implies that the lowest \texttt{AsyncGetCallTrace} call interval is the time between two ticks of the system timer interrupt (\textit{jiffy}). This duration depends on the clock interrupt frequency of the hardware platform being used. Default clock frequency for Linux based operating systems (since kernel version 2.6.13) is 250 Hz which results in $\frac{1}{250} = 0.004$ seconds for the duration of a jiffy. In such configuration, Honest profiler would be able to obtain a sample every 4 milliseconds.
 
-
-
+\TODO{It is CPU time not clock time}
 
 % since the clock maintained by the kernel measures time in jiffies.
 
+\subsection{\texttt{AsyncGetCallTrace} performance analysis}
+\TODO{Describe what and why are being measured and how it is being measured}
+
+\subsubsection{Java Microbenchmark Harness}
+\TODO{Briefly describe jmh}
+
+\subsubsection{Implications of the performance analysis}
+\TODO{Explain results}
+\TODO{Show a graph}
+
+\subsection{Optimizing the profiling implementation}
 
 
 \end{document}

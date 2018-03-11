@@ -66,7 +66,7 @@ At a safepoint the thread's representation of it's Java machine state is well de
 
 
 
-\subsection{\texttt{AsyncGetCallTrace} profilers}
+\subsubsection{\texttt{AsyncGetCallTrace} profilers}
 These kind of profilers make use of an undocumented JVM method \texttt{Async\-Get\-Call\-Trace} \cite{agct_source} which enables obtaining call traces from a thread without the safepoint bias. Due to this characteristic, profiling samples tend to be more 'honest' since the JVM does not have to stop on a safepoint in order to obtain the call trace of the running thread.
 
 Notable examples of such profilers are Honest Profiler and Java Mission Control. \TODO{Citation needed}
@@ -82,7 +82,7 @@ Points to expand on:
 \TODO{Pros and cons}
 
 
-\subsection{\texttt{GetStackTrace} profilers}
+\subsubsection{\texttt{GetStackTrace} profilers}
 This method uses function from the official JVM Tooling Interface API \cite{jvmti_doc} called \texttt{GetStackTrace}.
 
 Some points to expand on:
@@ -91,8 +91,8 @@ Some points to expand on:
 	\item Has higher overhead when compared to other methods. Application having many threads might take a long time for all the threads to reach a safepoint.
 \end{enumerate}
 
-\subsection{Native profilers}
-\subsection{\texttt{jstack}}
+\subsubsection{Native profilers}
+\subsubsection{\texttt{jstack}}
 
 
 
