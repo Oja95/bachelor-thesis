@@ -9,7 +9,7 @@
 Sampling profilers gather call traces from the observable program at regular intervals. Distribution of the gathered samples highlights the hotspots in the observable program. Higher frequency of a call trace suggests that more program's execution time was spent in that particular state. Profiling result is a statistical approximation of the program's performance. Thus, having more samples will provide a more accurate approximation. This approach also assumes that samples are gathered randomly as bias in the samples could potentially yield inaccurate results. 
 \TODO{Show a flamegraph to clarify this point?}
 
-\subsection{Sampling profiling biases}
+\subsection{Sampling profiling challenges}
 There are multiple problems that the implementations of the sampling profilers could experience.
 \subsubsection{Periodicity bias}
 This problem occurs when the sampling interval catches on to some program's routine which executions match the sampling interval. Figure ~\ref{fig:periodicityBias} on page ~\pageref{fig:periodicityBias} illustrates the issue behing the bias. Suppose that the observable program runs \texttt{Method X} and \texttt{Method Y} alternatingly for some constant time period. If the dotted lines are the marks for the call trace samples taken during profiling, the results would be skewed as not a single sample represents \texttt{Method Y} in the results.
