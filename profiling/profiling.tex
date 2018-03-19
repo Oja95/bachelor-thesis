@@ -2,12 +2,20 @@
 \documentclass[..thesis.tex]{subfiles}
 
 \begin{document}
-
-\TODO{Ideas from Nitsan Wakart: https://www.youtube.com/watch?v=pXV4pY42FtM}
-
-
+\TODO{First paragraph needs rewording and/or restructuring}
 Sampling profilers gather call traces from the observable program at regular intervals. Distribution of the gathered samples highlights the hotspots in the observable program. Higher frequency of a call trace suggests that more program's execution time was spent in that particular state. Profiling result is a statistical approximation of the program's performance. Thus, having more samples will provide a more accurate approximation. This approach also assumes that samples are gathered randomly as bias in the samples could potentially yield inaccurate results. 
-\TODO{Show a flamegraph to clarify this point?}
+
+Figure ~\ref{fig:samplingProf} on page ~\pageref{fig:samplingProf} helps to visualize the performance implications of the frequency of the gathered samples. The graph visualizes the performance outline of a simple program that executes two identical methods, \texttt{methodA} and \texttt{methodB}, alternately. This simple program executed for $911$ milliseconds during which $120$ usable samples were collected. $58$ of those samples contained \texttt{methodA} in its top call frame and $44$ contained \texttt{methodB} in its top frame.
+
+Although sampling profiling does not provide precise time metrics for each method, it does provide a general overview to visualize the time spent in the profileable application's context. 
+
+\begin{figure}[H]
+\includegraphics[scale=0.335]{samplingprofexample.png}
+%\includegraphics[scale=0.6]{samplingprofexample2.png}
+\caption{Visualization of sampling profiling output}
+\label{fig:samplingProf}
+\end{figure}
+Due to the low amount of samples, it appears as \texttt{methodA} consumes more time than the \texttt{methodB} which is not the case in reality. Increasing the amount of call trace samples gathered could potentially draw a more accurate visualization of the program's performance.
 
 \subsection{Sampling profiling challenges}
 There are multiple problems that the implementations of the sampling profilers could experience.
