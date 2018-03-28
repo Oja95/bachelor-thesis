@@ -3,6 +3,7 @@
 
 \begin{document}
 \TODO{First paragraph needs rewording and/or restructuring}
+\TODO{Consider providing a stack trace in the appendices to illustrate what is the sample that we are gathering here}
 Sampling profilers gather call traces from the observable program at regular intervals. Distribution of the gathered samples highlights the hotspots in the observable program. Higher frequency of a call trace suggests that more program's execution time was spent in that particular state. Profiling result is a statistical approximation of the program's performance. Thus, having more samples will provide a more accurate approximation. This approach also assumes that samples are gathered randomly as bias in the samples could potentially yield inaccurate results. 
 
 Figure ~\ref{fig:samplingProf} on page ~\pageref{fig:samplingProf} helps to visualize the performance implications of the frequency of the gathered samples. The graph visualizes the performance outline of a simple program that executes two identical methods, \texttt{methodA} and \texttt{methodB}, alternately. This simple program executed for $911$ milliseconds during which $120$ usable samples were collected. $58$ of those samples contained \texttt{methodA} in its top call frame and $44$ contained \texttt{methodB} in its top frame.
@@ -18,7 +19,7 @@ Although sampling profiling does not provide precise time metrics for each metho
 Due to the low amount of samples, it appears as \texttt{methodA} consumes more time than the \texttt{methodB} which is not the case in reality. Increasing the amount of call trace samples gathered could potentially draw a more accurate visualization of the program's performance.
 
 \subsection{Sampling profiling challenges}
-There are multiple problems that the implementations of the sampling profilers could experience.
+There are multiple problems that the implementations of the sampling profilers could experience. 
 \subsubsection{Periodicity bias}
 This problem occurs when the sampling interval catches on to some program's routine which executions match the sampling interval. Figure ~\ref{fig:periodicityBias} on page ~\pageref{fig:periodicityBias} illustrates the issue behing the bias. Suppose that the observable program runs \texttt{Method X} and \texttt{Method Y} alternatingly for some constant time period. If the dotted lines are the marks for the call trace samples taken during profiling, the results would be skewed as not a single sample represents \texttt{Method Y} in the results.
 
@@ -47,28 +48,52 @@ This problem occurs when the sampling interval catches on to some program's rout
 \label{fig:periodicityBias}
 \end{figure}
 
+\TODO{Ask supervisors whether it is acceptable to 'backreference' a figure shown previosuly in such manner.}
+Real life example can be observed on the figure ~\ref{fig:samplingProf} on page ~\pageref{fig:samplingProf}. The sample application called two identical methods alternatingly after a constant interval or $4$ milliseconds without any mechanism to combat this periodicity bias. On the output graph, it can be observed that the \texttt{methodA} was present in a larger amount of samples than \texttt{methodB}. In reality, it would be expected for \texttt{methodA} and \texttt{methodB} to have approximately the same number of call trace samples representing them.
 
-Possible ways to tackle this problem would be to randomize the sampling interval by having a random number of time units offseting the sampling interval.
+Possible ways to tackle this problem would be to randomize the sampling interval by having a random number of time units offseting the sampling interval. 
 \subsubsection{Safepoint bias}
-\TODO{Assumption is that samples are taken randomly (referring to safe spots casting a shade on the randomness assumption)}
-\TODO{Needs rewording}
-As mentioned previously, sampling profiling assumes that the samples are random in a sense that no sample should have a higher chance of occurring than any other sample. When gathering samples from a program running on the JVM, one must take \textit{safepoints} into consideration.
+Sampling profiling assumes that the obtained samples are acquired randomly. When gathering samples from a program running on the Java Virtual Machine, one must take \textit{safepoints} into consideration. 
 
-OpenJDK's glossary \cite{jdk_glossary} defines \textit{safepoint} as follows: 
-\begin{quote}
-A point during program execution at which all GC roots are known and all heap object contents are consistent. From a global point of view, all threads must block at a safepoint before the GC can run. (As a special case, threads running JNI code can continue to run, because they use only handles. During a safepoint they must block instead of loading the contents of the handle.) From a local point of view, a safepoint is a distinguished point in a block of code where the executing thread may block for the GC. Most call sites qualify as safepoints. There are strong invariants which hold true at every safepoint, which may be disregarded at non-safepoints. Both compiled Java code and C/C++ code be optimized between safepoints, but less so across safepoints. The JIT compiler emits a GC map at each safepoint. C/C++ code in the VM uses stylized macro-based conventions (e.g., TRAPS) to mark potential safepoints.
-\end{quote}
+\TODO{subsubsubsections for safepoint definition and demonstration?}
 
-Safepoints are not precisely documented in the language specifications as they are implementation details of the JVM and each JVM implementation may interpret safepoints differently but they generally work in a similar manner. \TODO{Citation needed}
+Safepoints in the Java Virtual Machine are defined as points during the program's execution during which all of the threads are in a consistent and well known state. Safepoints are necessary for various Java Virtual Machine's operations such as the garbage collection, method deoptimization and class redefinition. \cite{hotspot_glossary}
+
+ 
+It has been shown that most of the existing Java profilers require the Java Virtual Machine to be stopped on a safepoint in order to obtain the call trace sample from the profileable thread. However, this mechanism also casts a shadow on the profling results as this implies that the samples are not aquired randomly but rather require the Java Virtual Machine to be in a specific state. \cite{mytkowicz_evaluating_2010}
+
+The execution of the code sample in listing ~\ref{lst:safepoint} illustrates this issue well. 
+\begin{lstlisting}[language=java,style=def,label={lst:safepoint}, caption={Counted loops do not contain safepoints}]
+int k = 0;
+for (int i = 0; i < Integer.MAX_VALUE; i++) {
+	for (int j = 0; j < 2; j++) {
+    	k++;
+    	if ((k % 2) == 1) k++;
+	}
+}
+\end{lstlisting}
+As various Java Virtual Machine routines are nondeterministic, it is impossible to predict when does the Java Virtual Machine signal its threads to be stopped on a safepoint. However, if such request should occur in the middle of the counted loop's execution in listing ~\ref{lst:safepoint}, the thread executing the loop's instructions will not stop until the loop has finished. Thus, if an ordinary profiler signals the thread for a call trace sample, it is delayed until the thread executing the loop's instructions finishes its job. 
+
+To measure the actual time that is spent waiting for the Java Virtual Machine to stop all its threads on a safepoint, \texttt{-XX:+PrintGCApplicationStoppedTime} flag can be used to measure this metric. This flag outputs the time it takes for the Java Virtual Machine to stop all threads in order to execute its subroutine and the time that this operation took in total. Due to nondeterminicity, the sample code in listing ~\ref{lst:safepoint} was executed $100$ times. The worst case among $100$ program runs recorded a Java Virtual Machine operation that took $7.5171863$ seconds and $7.5171122$ seconds of that time was spent on stopping the thread. It is worth mentioning that $11.5181148$ seconds was spent on the whole execution of that particular attempt.
+
+\TODO{Explain that it's bad, mkay?}
 
 
-Some points to expand on
-\begin{enumerate}
-	\item JVM raises a flag to notify threads to stop on safepoint and then waits the threads to stop on a safepoint. Thread polls for safepoint flag after every 2 bytecode instructions (when in interpreter), end of non-counted loop, method exit, JNI call exit(C1/C2 compiled code), 
-\end{enumerate}
-\begin{quote}
-At a safepoint the thread's representation of it's Java machine state is well described, and can be safely manipulated and observed by other threads in the JVM. - Gil Tene
-\end{quote}
+Such bias during obtaining the call trace clearly contradicts the randomness prerequisite for sampling profiling.
+
+
+
+
+\TODO{Ideas to expand on:}
+Nitsan Wakart on safepoints not present in indexed loops: The reason it's so stuck is because the computation is running in a 'counted' loop, and counted loops are considered short by the JVM. Short enough to not have safepoints. This thread refusing to come to a safepoint will lead to all other threads suspending indefinitely at the next safepoint operation.
+
+
+Safepoints are not precisely documented in the language specifications as they are implementation details of the JVM and each JVM implementation may interpret safepoints differently but they generally work in a similar manner.
+
+JVM raises a flag to notify threads to stop on safepoint and then waits the threads to stop on a safepoint. Thread polls for safepoint flag after every 2 bytecode instructions (when in interpreter), end of non-counted loop, method exit, JNI call exit(C1/C2 compiled code)
+
+\subsubsection{Observer effect}
+\TODO{Introducing overhead whilst profiling could have implications on the results: http://www.inf.usi.ch/faculty/hauswirth/publications/pldi10.pdf}
 
 \subsection{Sampling profiling possible implementations for the JVM}
 
@@ -78,6 +103,7 @@ At a safepoint the thread's representation of it's Java machine state is well de
 These kind of profilers make use of an undocumented JVM method \texttt{Async\-Get\-Call\-Trace} \cite{agct_source} which enables obtaining call traces from a thread without the safepoint bias. Due to this characteristic, profiling samples tend to be more 'honest' since the JVM does not have to stop on a safepoint in order to obtain the call trace of the running thread.
 
 Notable examples of such profilers are Honest Profiler and Java Mission Control. \TODO{Citation needed}
+
 
 Points to expand on:
 \begin{enumerate}
