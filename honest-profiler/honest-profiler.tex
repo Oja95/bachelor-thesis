@@ -3,7 +3,7 @@
 
 \begin{document}
 
-Honest Profiler \cite{hon_prof} is a software written in Java and C++ which aims to gather honest and accurate samples from a running Java application. It is one of the maturest profilers which utilizes the \texttt{AsyncGetCallTrace} method to obtain its samples. Moreover, Honest Profiler is licensed under an open source license which encourages the community to further investigate and develop this software solution.
+Honest Profiler \cite{hon_prof} is a software written in Java and C++ which aims to gather honest and accurate samples from a running Java application. It is one of the maturest profilers which utilizes the \texttt{AsyncGetCallTrace} method to obtain its samples. \supervisor{Is it one of the most maturest profilers, how do we measure maturity?} Moreover, Honest Profiler is licensed under an open source license which encourages the community to further investigate and develop this software solution.
 
 \subsection{Architecture}
 Honest Profiler cosists of two larger components: a JVMTI native agent and a Java facade for result visualization, analysis and transformation. The profiling is almost completely done by the agent whereas the Java facade component aims to provide tools to ease the use of the profiler.
@@ -16,6 +16,8 @@ JVMTI agent is a dynamic library which serves as a client of the JVM Tooling Int
 \TODO{Signal handler setup and its handling mechanism (random thread)}
 \TODO{Use of interval timer}
 \TODO{Describe the usage of Lock-Free Single-Producer-Single Consumer Circular Queue in the signal handler for call trace persisting and why is it necessary due to limitations in signal handler. \url{https://www.codeproject.com/Articles/43510/Lock-Free-Single-Producer-Single-Consumer-Circular\#heading_references}}
+
+\supervisor{This seems awfully detailed.}
 
 \subsubsection{Java facade}
 \TODO{Investigate and describe the tools in the Java facade}
@@ -32,6 +34,7 @@ Current implementation of Honest Profiler makes use of the standard interval tim
 \subsection{\texttt{AsyncGetCallTrace} performance analysis}
 \TODO{One of ASCGT pros is that it is incredibly cheap when compared to other profiling methods. Should find out how cheap it actually is. Needs brainstorming how to show its 'cheapness'}
 \TODO{Actually build a custom OpenJDK and measure and persist the average execution time of ASGCT. Also figure out why is it useful. Maybe even deserves a separate section due to its extent}
+\supervisor{Build the openJDK}}
 \TODO{Describe what and why are being measured and how it is being measured}
 
 \subsubsection{Java Microbenchmark Harness}
@@ -46,6 +49,6 @@ Current implementation of Honest Profiler makes use of the standard interval tim
 \TODO{Figure out a good topic for the kernel clock rate increase method.}
 \subsubsection{Signal handling based on wall clock}
 \TODO{Describe SIGALRM approach. Describe the additional bias it introduces.}
-
+\supervisor{Does it really matter that it is SIGALRM? Maybe generalize it a bit and talk about possibilites of not relying on CPU time, for example we could send a signal ourselves if we wanted to.}
 
 \end{document}
