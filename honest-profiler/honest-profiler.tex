@@ -3,7 +3,7 @@
 
 \begin{document}
 
-Honest Profiler \cite{hon_prof} is a software written in Java and C++ which aims to gather honest and accurate samples from a running Java application. It is one of the maturest profilers which utilizes the \texttt{AsyncGetCallTrace} method to obtain its samples. Moreover, Honest Profiler is licensed under an open source license which encourages the community to further investigate and develop this software solution.
+Honest Profiler \cite{hon_prof} is a software written in Java and C++ which aims to gather honest and accurate samples from a running Java application. Honest Profiler uses the \texttt{AsyncGetCallTrace} method to obtain its samples. Moreover, Honest Profiler is licensed under an open source license which encourages the community to further investigate and develop this software solution.
 
 \subsection{Architecture}
 Honest Profiler cosists of two larger components: a JVMTI native agent and a Java facade for result visualization, analysis and transformation. The profiling is almost completely done by the agent whereas the Java facade component aims to provide tools to ease the use of the profiler.
@@ -33,9 +33,6 @@ Current implementation of Honest Profiler makes use of the standard interval tim
 \TODO{One of ASCGT pros is that it is incredibly cheap when compared to other profiling methods. Should find out how cheap it actually is. Needs brainstorming how to show its 'cheapness'}
 \TODO{Actually build a custom OpenJDK and measure and persist the average execution time of ASGCT. Also figure out why is it useful. Maybe even deserves a separate section due to its extent}
 \TODO{Describe what and why are being measured and how it is being measured}
-
-\subsubsection{Java Microbenchmark Harness}
-\TODO{Briefly describe jmh}
 
 \subsubsection{Implications of the performance analysis}
 \TODO{Consider splitting the perf analysis to separate section}
