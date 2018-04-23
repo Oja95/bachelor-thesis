@@ -19,11 +19,7 @@ runnable [0x00007fecd5660000]
 Gathered samples can then be aggregated and grouped based on their occurrence.
 Distribution of the gathered samples highlights the hotspots in the observable program. Higher frequency of a call trace suggests that more program's execution time was spent in that particular state. 
 
-\TODO{Cite flamegraphs: http://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html}
-
-\TODO{Figure out whether to use 'visualization' or 'visualisation'. How do I even english?}
-
-Figure ~\ref{fig:samplingProf} on page ~\pageref{fig:samplingProf} helps to visualize the performance implications of the frequency of the gathered samples. The visualization was created by a tool called Flamegraphs which provides means to generate a comprehensive and intuitive visualization of the gathered call trace samples. Visualization tools are necessary to produce meaningful representations of the collected data as unprocessed call trace samples \textit{per se} are not informative without the context of other samples' frequency.
+Figure ~\ref{fig:samplingProf} on page ~\pageref{fig:samplingProf} helps to visualize the performance implications of the frequency of the gathered samples. The visualization was created by a tool called Flamegraphs which provides means to generate a comprehensive and intuitive visualization of the gathered call trace samples. \cite{gregg_flame} Visualization tools are necessary to produce meaningful representations of the collected data as unprocessed call trace samples \textit{per se} are not informative without the context of other samples' frequency.
 
 \TODO{Consider showing a normal unbiased-ish flamegraph example here as main goal is to show visualization not the unreliability problems caused by low sample count. Use this picture below when that problem is actual and create a new one here.}
 
