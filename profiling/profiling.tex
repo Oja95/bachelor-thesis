@@ -25,12 +25,12 @@ Figure ~\ref{fig:samplingProf} on page ~\pageref{fig:samplingProf} helps to visu
 
 
 \begin{figure}[H]
-\includegraphics[scale=0.335]{samplingprofexample.png}
+\includegraphics[scale=0.4]{equalsample.png}
 \caption{Visualization of sampling profiling output}
 \label{fig:samplingProf}
 \end{figure}
 
-The samples of the visualization in figure ~\ref{fig:samplingProf} were gathered from a simple program that executed two identical methods, \texttt{methodA} and \texttt{methodB}, alternately. This simple program executed for $911$ milliseconds in total during which $120$ usable samples were collected. $58$ of those samples contained \texttt{methodA} in its top call frame and $44$ contained \texttt{methodB} in its top frame.
+The samples of the visualization in figure ~\ref{fig:samplingProf} were gathered from a simple program that executed two identical methods, \texttt{methodA} and \texttt{methodB}, alternately. During its execution $481$ usable samples were collected. $198$ of those samples contained \texttt{methodA} in its top call frame and $194$ contained \texttt{methodB} in its top frame.
 
 
 Although sampling profiling does not provide precise metrics for each method's execution time, it can provide a general overview to visualize the time spent in the profileable application's context. 
