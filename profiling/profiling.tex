@@ -99,11 +99,9 @@ Increasing the sampling interval would improve the situation as demonstrated on 
 \caption{Scenario with sufficient sampling interval}
 \label{fig:highSampleCount}
 \end{figure}
+
 \TODO{Consider explaining why sample interval is relevant even in the case of 1ms vs 4ms sample interval: Modern CPU can do 123071985425793459342386549235 [citation needed] operations during that time, lot can happen during that + higher frequency provides better granularity + more consistent profiling result}
-\TODO{Figure captions!}
 \TODO{Show a real life example of low sample unreliability impact: Due to the low amount of samples, it appears as \texttt{methodA} consumes more time than the \texttt{methodB} which is not the case in reality. Increasing the amount of call trace samples gathered could potentially draw a more accurate visualization of the program's performance.}
-\TODO{Consider briefly covering other profiling methods such as instrumentation based profilers}
-\TODO{Bring out pros with sampling profiling (real fast profiling perf, low overhead) when compared to other methods}
 
 \subsection{Sampling profiling challenges}
 There are multiple problems that the implementations of the sampling profilers could experience that could potentially cause the results to be skewed.
@@ -165,8 +163,6 @@ To measure the actual time that is spent waiting for the Java Virtual Machine to
 Although the provided example is rather artificial and such occurrences in real life programs are rare, it clearly points out the bias that the safepoints potentially introduce. Such bias during obtaining the call trace clearly contradicts the randomness prerequisite for sampling profiling.
 
 
-
-
 \TODO{Ideas to expand on:}
 Introduce Vootele's idea that safepoints won't turn profiling results into gibberish but rather lessens the accuracy when high granularity matters
 
@@ -177,13 +173,17 @@ JVM raises a flag to notify threads to stop on safepoint and then waits the thre
 \subsubsection{Observer effect}
 \TODO{Introducing overhead whilst profiling could have implications on the results: http://www.inf.usi.ch/faculty/hauswirth/publications/pldi10.pdf}
 \TODO{Explain that introducing overhead can skew profiling results}
-\TODO{Reference the upcoming section about actually measuring the ASGCT overhead by making a custom JDK build}
-\TODO{Move previous TODO to honest-profiler section}
+
+
+\subsection{Sampling profiling advantages}
+\TODO{Throw some citations here as well}
+When compared to other profiling methods, sampling profiling excels with its performance. Sampling profilers can potentially obtain thousands of samples each second without noticeable performance overhead. For example, tracing profilers must perform instrumentation on the observable application's bytecode. Depending on the level of information detail, requiring higher information granularity
+could potentially introduce impactful overhead to the application's performance which could result in inaccurate profiling results. On the other hand, sampling profilers can extract significantly larger amount of information from the observable application without a major performance impact.
+
 
 \subsection{Sampling profiling possible implementations for the JVM}
 
-
-
+\subsubsection{\texttt{jstack}}
 \subsubsection{\texttt{AsyncGetCallTrace} profilers}
 These kind of profilers make use of an undocumented JVM method \texttt{Async\-Get\-Call\-Trace} \cite{agct_source} which enables obtaining call traces from a thread without the safepoint bias. Due to this characteristic, profiling samples tend to be more 'honest' since the JVM does not have to stop on a safepoint in order to obtain the call trace of the running thread.
 
@@ -211,7 +211,6 @@ Some points to expand on:
 \end{enumerate}
 
 \subsubsection{Native profilers}
-\subsubsection{\texttt{jstack}}
 
 
 
