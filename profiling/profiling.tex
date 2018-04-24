@@ -160,12 +160,11 @@ As various Java Virtual Machine routines are nondeterministic, it is impossible 
 
 To measure the actual time that is spent waiting for the Java Virtual Machine to stop all its threads on a safepoint, \texttt{-XX:+PrintGCApplicationStoppedTime} flag can be used to measure this metric. This flag outputs the time it takes for the Java Virtual Machine to stop all threads in order to execute its subroutine and the time that this operation took in total. Due to nondeterminicity, the sample code in listing ~\ref{lst:safepoint} was executed $100$ times. The worst case among $100$ program runtimes recorded a Java Virtual Machine operation that took $7.517$ seconds and $99.999\%$ of that time was spent on reaching a safepoint. It is worth mentioning that this operation took $65\%$ of the whole program's execution time.
 
-Although the provided example is rather artificial and such occurrences in real life programs are rare, it clearly points out the bias that the safepoints potentially introduce. Such bias during obtaining the call trace clearly contradicts the randomness prerequisite for sampling profiling.
+Although the provided example is rather artificial and such occurrences in real life programs are rare, it clearly points out the bias that the safepoints potentially introduce. Such bias during obtaining the call trace clearly contradicts the randomness prerequisite for sampling profiling. Despite the presence of safepoint bias, such profiler can still produce actionable profiling results but lessen the accuracy when high detail granularity of the results is important.
 
 
 \TODO{Ideas to expand on:}
-Introduce Vootele's idea that safepoints won't turn profiling results into gibberish but rather lessens the accuracy when high granularity matters
-
+\TODO{Should I explain the implementation side of the safepoints more in-depth?}
 Safepoints are not precisely documented in the language specifications as they are implementation details of the JVM and each JVM implementation may interpret safepoints differently but they generally work in a similar manner.
 
 JVM raises a flag to notify threads to stop on safepoint and then waits the threads to stop on a safepoint. Thread polls for safepoint flag after every 2 bytecode instructions (when in interpreter), end of non-counted loop, method exit, JNI call exit(C1/C2 compiled code)
