@@ -28,10 +28,7 @@ Figure ~\ref{fig:samplingProf} on page ~\pageref{fig:samplingProf} helps to visu
 
 The samples of the visualization in figure ~\ref{fig:samplingProf} were gathered from a simple program that executed two identical methods, \texttt{methodA} and \texttt{methodB}, alternately. During its execution $481$ usable samples were collected. $198$ of those samples contained \texttt{methodA} in its top call frame and $194$ contained \texttt{methodB} in its top frame.
 
-Although sampling profiling does not provide precise metrics for each method's execution time, it can provide a general overview to visualize the time spent in the profileable application's context. Such information is often sufficient to actionable optimizations in the observable application.
-
-\TODO{Cover instrumentation based tracing profiling approach briefly}
-\TODO{Pros of sampling profiling}
+Although sampling profiling does not provide precise metrics for each method's execution time, it can provide a general overview to visualize the time spent in the profileable application's context. Such information is often sufficient to make actionable optimizations in the observable application.
 
 \subsection{Importance of samples' quantity}
 
@@ -101,7 +98,6 @@ Increasing the sampling interval would improve the situation as demonstrated on 
 \end{figure}
 
 \TODO{Consider explaining why sample interval is relevant even in the case of 1ms vs 4ms sample interval: Modern CPU can do 123071985425793459342386549235 [citation needed] operations during that time, lot can happen during that + higher frequency provides better granularity + more consistent profiling result}
-\TODO{Show a real life example of low sample unreliability impact: Due to the low amount of samples, it appears as \texttt{methodA} consumes more time than the \texttt{methodB} which is not the case in reality. Increasing the amount of call trace samples gathered could potentially draw a more accurate visualization of the program's performance.}
 
 \subsection{Sampling profiling challenges}
 There are multiple problems that the implementations of the sampling profilers could experience that could potentially cause the results to be skewed.
@@ -137,16 +133,16 @@ This problem occurs when the sampling interval catches on to some program's rout
 
 Possible way to tackle this problem would be to randomize the sampling interval by having a random number of time units offseting the sampling interval. 
 
+\TODO{Is necessary to explain offseting interval more indepth?}
+
 \subsubsection{Safepoint bias}
 
 Sampling profiling assumes that samples are gathered randomly as bias in the samples could potentially yield inaccurate results. When gathering samples from a program running on the Java Virtual Machine, one must take \textit{safepoints} into consideration. 
 
-Safepoints in the Java Virtual Machine are defined as points during the program's execution during which all of the threads are in a consistent and well known state. Safepoints are necessary for various Java Virtual Machine's operations such as the garbage collection, method deoptimization and class redefinition. \cite{hotspot_glossary}
-
-\TODO{Should citation be at the end of paragraph?}
-It has been shown that most of the existing Java profilers require the Java Virtual Machine to be stopped on a safepoint in order to obtain the call trace sample from the profileable thread.\cite{wakart_psychosomatic_2016} However, this mechanism also casts a shadow on the profling results as this implies that the samples are not acquired randomly but rather require the Java Virtual Machine to be in a specific state. \cite{mytkowicz_evaluating_2010}
+Safepoints in the Java Virtual Machine are defined as points during the program's execution during which all of the threads are in a consistent and well known state. Safepoints are necessary for various Java Virtual Machine's operations such as the garbage collection, method deoptimization and class redefinition.\cite{hotspot_glossary} It has been shown that most of the existing Java profilers require the Java Virtual Machine to be stopped on a safepoint in order to obtain the call trace sample from the profileable thread.\cite{wakart_psychosomatic_2016} However, this mechanism also casts a shadow on the profling results as this implies that the samples are not acquired randomly but rather require the Java Virtual Machine to be in a specific state. \cite{mytkowicz_evaluating_2010}
 
 The execution of the code sample in listing ~\ref{lst:safepoint} illustrates this issue well. 
+\TODO{Verify that this code snippet is completely rendered on the same page in the final version}
 \begin{lstlisting}[language=java,style=def,label={lst:safepoint}, caption={Counted loops do not contain safepoints}]
 int k = 0;
 for (int i = 0; i < Integer.MAX_VALUE; i++) {
@@ -156,7 +152,7 @@ for (int i = 0; i < Integer.MAX_VALUE; i++) {
 	}
 }
 \end{lstlisting}
-As various Java Virtual Machine routines are nondeterministic, it is impossible to predict when does the Java Virtual Machine signal its threads to be stopped on a safepoint. However, if such request should occur in the middle of the counted loop's execution in listing ~\ref{lst:safepoint}, the thread executing the loop's instructions will not stop until the loop has finished. Thus, if an ordinary profiler signals the thread for a call trace sample, it is delayed until the thread executing the loop's instructions finishes its task. \cite{wakart_psychosomatic_2015}
+As various Java Virtual Machine routines are nondeterministic, it is impossible to predict when does the Java Virtual Machine signal its threads to be stopped on a safepoint. However, if such request should occur in the middle of the counted loop's execution in listing ~\ref{lst:safepoint}, the thread executing the loop's instructions will not stop until the loop has finished. Thus, if an ordinary sampling profiler signals the thread for a call trace sample, it is delayed until the thread executing the loop's instructions finishes its task. \cite{wakart_psychosomatic_2015}
 
 To measure the actual time that is spent waiting for the Java Virtual Machine to stop all its threads on a safepoint, \texttt{-XX:+PrintGCApplicationStoppedTime} flag can be used to measure this metric. This flag outputs the time it takes for the Java Virtual Machine to stop all threads in order to execute its subroutine and the time that this operation took in total. Due to nondeterminicity, the sample code in listing ~\ref{lst:safepoint} was executed $100$ times. The worst case among $100$ program runtimes recorded a Java Virtual Machine operation that took $7.517$ seconds and $99.999\%$ of that time was spent on reaching a safepoint. It is worth mentioning that this operation took $65\%$ of the whole program's execution time.
 
@@ -170,8 +166,15 @@ Safepoints are not precisely documented in the language specifications as they a
 JVM raises a flag to notify threads to stop on safepoint and then waits the threads to stop on a safepoint. Thread polls for safepoint flag after every 2 bytecode instructions (when in interpreter), end of non-counted loop, method exit, JNI call exit(C1/C2 compiled code)
 
 \subsubsection{Observer effect}
-\TODO{Introducing overhead whilst profiling could have implications on the results: http://www.inf.usi.ch/faculty/hauswirth/publications/pldi10.pdf}
-\TODO{Explain that introducing overhead can skew profiling results}
+
+Attaching a profiler to the observable application does alter the way how the application would normally execute. The \textit{observer effect} describes how a presence of a profiler can change the profiling outcome.
+ 
+Firstly, a profiler does introduce some performance overhead due to its nature. Profilers do need to execute additional instructions for gathering information from the observable application. To have meaningful profiling results, this overhead must not affect the application's performance by a large extent. \TODO{Can cite N. Wakart on intorduced overhead problem, I think I heard it somewhere}
+
+The presence of a profiler could also change the way how the Java Virtual Machine does its optimizations. This factor is especially relevant for tracing profilers as they rely on bytecode instrumentation which directly affects the way how the Java Virtual Machine performs its optimizations. Some optimizations might not be possible due to the added bytecode instructions added by the tracing profiler. \cite{mytkowicz_evaluating_2010} 
+
+\TODO{Needs better (or another) citation on profile change due to optimizations change. The citation mentioned: "[..] a profiler may perturb the program being optimized and thus change its profile"}
+\TODO{Perhaps can construct an illustrative example for these problems?}
 
 
 \subsection{Sampling profiling advantages}
