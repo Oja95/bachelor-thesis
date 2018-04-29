@@ -3,6 +3,9 @@
 
 \begin{document}
 
+\TODO{Upon reaching here, it should be clear that ASGCT is good shit}
+\TODO{What's the probelm? what can we cdo to improve?}
+
 Honest Profiler \cite{hon_prof} is a software written in Java and C++ which aims to gather honest and accurate samples from a running Java application. Honest Profiler uses the \texttt{AsyncGetCallTrace} method to obtain its samples. Moreover, Honest Profiler is licensed under an open source license which encourages the community to further investigate and develop this software solution.
 
 \subsection{Architecture}
@@ -17,15 +20,15 @@ JVMTI agent is a dynamic library which serves as a client of the JVM Tooling Int
 \TODO{Use of interval timer}
 \TODO{Describe the usage of Lock-Free Single-Producer-Single Consumer Circular Queue in the signal handler for call trace persisting and why is it necessary due to limitations in signal handler. \url{https://www.codeproject.com/Articles/43510/Lock-Free-Single-Producer-Single-Consumer-Circular\#heading_references}}
 
-\subsubsection{Java facade}
-\TODO{Investigate and describe the tools in the Java facade}
 
 \subsection{Current limitations}
 \TODO{Citation needed for GNU time.}
 \TODO{https://lwn.net/Articles/549593/ citate jiffy definition}
 Current implementation of Honest Profiler makes use of the standard interval timer from GNU time library and UNIX operating system signals to periodically call the \texttt{AsyncGetCallTrace} method. This implies that the lowest \texttt{AsyncGetCallTrace} call interval is the time between two ticks of the system timer interrupt (\textit{jiffy}). This duration depends on the clock interrupt frequency of the hardware platform being used. Default clock frequency for Linux based operating systems (since kernel version 2.6.13) is 250 Hz which results in $\frac{1}{250} = 0.004$ seconds for the duration of a jiffy. \cite{linux_time} In such configuration, Honest Profiler would be able to obtain a sample every 4 milliseconds.
 
+\TODO{Cite the linux source for posix cpu timers}
 \TODO{Describe that the cpu time profiling is both a curse and a blessing due to only threads on CPU are getting profiled but the method is so cheap that we get more samples because of it}
+\TODO{Cant get callback from timer more often tahn HZ but can ask clock from timer}
 
 % since the clock maintained by the kernel measures time in jiffies.
 
@@ -35,9 +38,11 @@ Current implementation of Honest Profiler makes use of the standard interval tim
 \TODO{Describe what and why are being measured and how it is being measured}
 
 \subsubsection{Implications of the performance analysis}
+\TODO{improvement preqreuisities (ok overhead)}
 \TODO{Consider splitting the perf analysis to separate section}
 \TODO{Explain results}
 \TODO{Show a graph}
+\TODO{There does not seem to be immediate problems why cant this sample asked more faster? assumption problems}
 
 \subsection{Optimizing the profiling implementation}
 \TODO{Figure out a good topic for the kernel clock rate increase method.}
