@@ -127,8 +127,6 @@ This problem occurs when the sampling interval catches on to some program's rout
 \label{fig:periodicityBias}
 \end{figure}
 
-%Real life example can be observed on the figure ~\ref{fig:samplingProf} on page ~\pageref{fig:samplingProf}. The sample application called two identical methods alternatingly after a constant interval or $4$ milliseconds without any mechanism to combat this periodicity bias. On the output graph, it can be observed that the \texttt{methodA} was present in a larger amount of samples than \texttt{methodB}. In reality, it would be expected for \texttt{methodA} and \texttt{methodB} to have approximately the same number of call trace samples representing them.
-
 Possible way to tackle this problem would be to randomize the sampling interval by having a random number of time units offseting the sampling interval. Increasing sample gathering frequency will also help to alleviate this problem.
 
 \subsubsection{Safepoint bias}
@@ -156,13 +154,6 @@ To measure the actual time that is spent waiting for the Java Virtual Machine to
 
 Although the provided example is rather artificial and such occurrences in real life programs are rare, it clearly points out the bias that the safepoints potentially introduce. Such bias during obtaining the call trace clearly contradicts the randomness prerequisite for sampling profiling. Despite the presence of safepoint bias, such profiler can still produce actionable profiling results but lessen the accuracy when high detail granularity of the results is important.
 
-
-%\TODO{Ideas to expand on:}
-%\TODO{Should I explain the implementation side of the safepoints more in-depth?}
-%Safepoints are not precisely documented in the language specifications as they are implementation details of the JVM and each JVM implementation may interpret safepoints differently but they generally work in a similar manner.
-
-%JVM raises a flag to notify threads to stop on safepoint and then waits the threads to stop on a safepoint. Thread polls for safepoint flag after every 2 bytecode instructions (when in interpreter), end of non-counted loop, method exit, JNI call exit(C1/C2 compiled code)
-
 \subsubsection{Observer effect}
 
 Attaching a profiler to the observable application does alter the way how the application would normally execute. The \textit{observer effect} describes how a presence of a profiler can change the profiling outcome.
@@ -171,13 +162,7 @@ Firstly, a profiler does introduce some performance overhead due to its nature. 
 
 The presence of a profiler could also change the way how the Java Virtual Machine does its optimizations. This factor affects sampling profilers as well but it is especially relevant for tracing profilers as they rely on bytecode instrumentation which directly affects the way how the Java Virtual Machine performs its optimizations. Some optimizations might not be possible due to the added bytecode instructions added by the tracing profiler. \cite{mytkowicz_evaluating_2010} 
 
-\TODO{Perhaps can construct an illustrative example for these problems?}
-
-
 \subsection{Sampling profiling compared to alternatives}
-\TODO{Describe alternatives}
-\TODO{Use previously described problems as context for comparing profilers}
-\TODO{Throw some citations here as well}
 
 An alternative approach for gathering performance information is using tracing profilers. Tracing profilers rely on observable application's bytecode instrumentation. Instrumentation is the act of adding additional instructions to the observable application to gather relevant profiling information. Tracing profilers instrument the observable application by wrapping method calls with instructions to measure method execution time. Result is a collection of call stack with included precise method timings. \TODO{Having tracing profiling often requires the knowledge 'where to look'. As in, for XRebel, we are tracing the interesting stacks during a HTTP request or db query or whatnot, random tracing samples are not very informative (imo)}
 
@@ -194,33 +179,19 @@ When comparing sampling profiling to tracing profiling, it excels with its perfo
 \texttt{jstack} is an utility included in the Oracle's JDK and OpenJDK by default. This utility can be used to print out stack traces of all threads of a Java process.\cite{jstack} The simplest implementation to show the concept of a sampling profiler would be to periodically call the \texttt{jstack} utility to obtain the snapshot of all threads. These snapshots can be persisted and processed to produce a visualization of the application's performance. This approach has a relatively high overhead when compared to other sampling profiling methods and is not a viable method for profiling real world applications but rather illustrates the concept of sampling profiling.
 
 \subsubsection{\texttt{AsyncGetCallTrace} profilers}
-These kind of profilers make use of an undocumented JVM method \texttt{Async\-Get\-Call\-Trace} \cite{agct_source} which enables obtaining call traces from a thread without the safepoint bias. Due to this characteristic, profiling samples tend to be more 'honest' since the JVM does not have to stop on a safepoint in order to obtain the call trace of the running thread.
+These kind of profilers make use of an undocumented JVM method \texttt{Async\-Get\-Call\-Trace} \cite{agct_source} which enables obtaining call traces from a thread without the safepoint bias. Due to this characteristic, profiling samples tend to be more 'honest' since the JVM does not have to stop on a safepoint in order to obtain the call trace of the running thread. This method is a part of the JVM Tooling Interface (JVMTI) Application Programming Interface (API).
 
-Notable examples of such profilers are Honest Profiler and Java Mission Control. \TODO{Citation needed}
-
-
-Points to expand on:
-\begin{enumerate}
-	\item Sends interrupt signal to thread and then runs signal handler to collect the stack trace. Only interrupted thread is stopped.
-	\item Does not require the thread to be stopped on a safepoint.
-	\item Shows only Java stack. (Most problems can be solved on Java level - Nitsan Wakart)
-	\item Only operations on CPU are sampled. Blocking/concurrency issues won't be spotted.
-\end{enumerate}
-
-\TODO{Pros and cons}
+Notable examples of such profilers which utilize \texttt{Async\-Get\-Call\-Trace} method  are Honest Profiler and Java Mission Control. 
 
 
 \subsubsection{\texttt{GetStackTrace} profilers}
-This method uses function from the official JVM Tooling Interface API \cite{jvmti_doc} called \texttt{GetStackTrace}.
+\texttt{GetStackTrace} is a method in the official JVMTI API which similarly to \texttt{Async\-Get\-Call\-Trace} obtains information about the stack of a thread \cite{jvmti_doc}. Downside for this method is the fact that profilers utilizing this method are safepoint biased. For this reason, the performance is negatively affected due to frequent pauses for reaching safepoints.
 
-Some points to expand on:
-\begin{enumerate}
-	\item Safepoint biased. Requires all the threads to be stopped on a safepoint in order top collect call traces
-	\item Has higher overhead when compared to other methods. Application having many threads might take a long time for all the threads to reach a safepoint.
-\end{enumerate}
+Due to safepoint induced performance problems, this method aquired significantly less samples when compared to profilers based on \texttt{Async\-Get\-Call\-Trace}.
+
+\texttt{GetStackTrace} is used in various popular profilers such as JVisualVM, YourKit and JProfiler. \cite{visualvm}
 
 \subsubsection{Native profilers}
-\TODO{This part needs citations + more info}
 Native profilers are tools utilizing the low level abstractions of the operating system to  profile the native binaries for the operating system. These profilers are superior to the previously described methods performance wise but do fall short on the usefulness of the gathered information. Native profilers fail to obtain sufficient information about the Java level stack frames executed inside the Java Virtual Machine. 
 
 
