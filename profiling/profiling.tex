@@ -158,7 +158,7 @@ Although the provided example is rather artificial and such occurrences in real 
 
 Attaching a profiler to the observable application does alter the way how the application would normally execute. The \textit{observer effect} describes how a presence of a profiler can change the profiling outcome.
  
-Firstly, a profiler does introduce some performance overhead due to its nature. Profilers do need to execute additional instructions for gathering information from the observable application. To have meaningful profiling results, this overhead must not affect the application's performance by a large extent.
+Firstly, a profiler does introduce some performance overhead due to its nature. Profilers do need to execute additional instructions for gathering information from the observable application. To have meaningful profiling results, this overhead must not affect the application's performance by a large margin.
 
 The presence of a profiler could also change the way how the Java Virtual Machine does its optimizations. This factor affects sampling profilers as well but it is especially relevant for tracing profilers as they rely on bytecode instrumentation which directly affects the way how the Java Virtual Machine performs its optimizations. Some optimizations might not be possible due to the added bytecode instructions added by the tracing profiler. \cite{mytkowicz_evaluating_2010} 
 
@@ -179,7 +179,7 @@ When comparing sampling profiling to tracing profiling, it excels with its perfo
 \texttt{jstack} is an utility included in the Oracle's JDK and OpenJDK by default. This utility can be used to print out stack traces of all threads of a Java process.\cite{jstack} The simplest implementation to show the concept of a sampling profiler would be to periodically call the \texttt{jstack} utility to obtain the snapshot of all threads. These snapshots can be persisted and processed to produce a visualization of the application's performance. This approach has a relatively high overhead when compared to other sampling profiling methods and is not a viable method for profiling real world applications but rather illustrates the concept of sampling profiling.
 
 \subsubsection{\texttt{AsyncGetCallTrace} profilers}
-These kind of profilers make use of an undocumented JVM method \texttt{Async\-Get\-Call\-Trace} \cite{agct_source} which enables obtaining call traces from a thread without the safepoint bias. Due to this characteristic, profiling samples tend to be more 'honest' since the JVM does not have to stop on a safepoint in order to obtain the call trace of the running thread. This method is a part of the JVM Tooling Interface (JVMTI) Application Programming Interface (API).
+These kind of profilers make use of an undocumented JVM method \texttt{Async\-Get\-Call\-Trace} \cite{agct_source} which enables obtaining call traces from a thread without the safepoint bias. Due to this characteristic, profiling samples tend to be more accurate since the JVM does not have to stop on a safepoint in order to obtain the call trace of the running thread. This method is a part of the JVM Tooling Interface (JVMTI) Application Programming Interface (API).
 
 Notable examples of such profilers which utilize \texttt{Async\-Get\-Call\-Trace} method  are Honest Profiler and Java Mission Control. 
 
@@ -193,6 +193,7 @@ Due to safepoint induced performance problems, this method aquired significantly
 
 \subsubsection{Native profilers}
 Native profilers are tools utilizing the low level abstractions of the operating system to  profile the native binaries for the operating system. These profilers are superior to the previously described methods performance wise but do fall short on the usefulness of the gathered information. Native profilers fail to obtain sufficient information about the Java level stack frames executed inside the Java Virtual Machine. 
+\TODO{Add example of native call trace to show that it is kind of useless}
 
 
 \end{document}
