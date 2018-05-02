@@ -184,12 +184,12 @@ These kind of profilers make use of an undocumented JVM method \texttt{Async\-Ge
 Notable examples of such profilers which utilize \texttt{Async\-Get\-Call\-Trace} method  are Honest Profiler and Java Mission Control. 
 
 
-\subsubsection{\texttt{GetStackTrace} profilers}
-\texttt{GetStackTrace} is a method in the official JVMTI API which similarly to \texttt{Async\-Get\-Call\-Trace} obtains information about the stack of a thread \cite{jvmti_doc}. Downside for this method is the fact that profilers utilizing this method are safepoint biased. For this reason, the performance is negatively affected due to frequent pauses for reaching safepoints.
+\subsubsection{\texttt{GetAllStackTraces} profilers}
+\texttt{GetAllStackTraces} is a method in the official JVMTI API which can be used to extract the stack traces of all the threads currently executing on the JVM\cite{jvmti_doc}. Downside for this method is the fact that profilers utilizing this method are safepoint biased. For this reason, the performance is negatively affected due to frequent pauses for reaching safepoints.
 
 Due to safepoint induced performance problems, this method aquired significantly less samples when compared to profilers based on \texttt{Async\-Get\-Call\-Trace}.
 
-\texttt{GetStackTrace} is used in various popular profilers such as JVisualVM, YourKit and JProfiler. \cite{visualvm}
+\texttt{GetAllStackTraces} is used in most commercial profilers such as JVisualVM, YourKit and JProfiler. \cite{visualvm} \cite{wakart_psychosomatic_2016}
 
 \subsubsection{Native profilers}
 Native profilers are tools utilizing the low level abstractions of the operating system to  profile the native binaries for the operating system. These profilers are superior to the previously described methods performance wise but do fall short on the usefulness of the gathered information. Native profilers fail to obtain sufficient information about the Java level stack frames executed inside the Java Virtual Machine. 
