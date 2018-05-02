@@ -6,38 +6,52 @@
 \TODO{Upon reaching here, it should be clear that ASGCT is good shit}
 \TODO{What's the probelm? what can we cdo to improve?}
 
-Honest Profiler \cite{hon_prof} is a software written in Java and C++ which aims to gather honest and accurate samples from a running Java application. Honest Profiler uses the \texttt{AsyncGetCallTrace} method to obtain its samples. Moreover, Honest Profiler is licensed under an open source license which encourages the community to further investigate and develop this software solution.
+Honest Profiler \cite{hon_prof} is a software written in Java and C++ which aims to gather honest and accurate samples from a running Java application. Moreover, Honest Profiler is licensed under an open source license which encourages the community to further investigate and develop this software solution.
 
 \subsection{Architecture}
 Honest Profiler cosists of two larger components: a JVMTI native agent and a Java facade for result visualization, analysis and transformation. The profiling is almost completely done by the agent whereas the Java facade component aims to provide tools to ease the use of the profiler.
 
 \subsubsection{JVMTI agent}
-\TODO{cite jvmti spec and/or doc}
-JVMTI agent is a dynamic library which serves as a client of the JVM Tooling Interface. JVMTI provides these agents means to investigate and control the applications running on the Java Virtual Machine. Since the agents are written in native languages such as C and C++, they can also utilize various operating system's tools.
+JVMTI agent is a dynamic library which serves as a client of the JVM Tooling Interface. \cite{jvmtm} JVMTI provides these agents means to investigate and control the applications running on the Java Virtual Machine. Since the agents are written in native languages such as C and C++, they can also utilize various operating system's tools.
 
-\TODO{Should describe how native agents work?}
-\TODO{Signal handler setup and its handling mechanism (random thread)}
-\TODO{Use of interval timer}
-\TODO{Describe the usage of Lock-Free Single-Producer-Single Consumer Circular Queue in the signal handler for call trace persisting and why is it necessary due to limitations in signal handler. \url{https://www.codeproject.com/Articles/43510/Lock-Free-Single-Producer-Single-Consumer-Circular\#heading_references}}
+Honest Profiler relies on UNIX operating system signals and timers for obtaining samples.
+It sets up a signal handler to handle \texttt{SIGPROF} signals sent to the Java process that the agent is attached to and an interval timer which sends the \texttt{SIGPROF} signal to that same process periodically. 
 
+\TODO{arbitrary thread handling cite; Advanced Programming in the UNIX® Environment: Second Edition By W. Richard Stevens, Stephen A. Rago}
+Upon receiving a signal, an \textit{arbitrary} thread currently executing on the CPU will handle the signal. The signal handler proceeds to call \texttt{AsyncGetCallTrace} method from the JVMTI API to obtain the call trace of the current thread which is handling the signal. The obtained call trace is then persisted.
+
+It is worth mentioning that the thread handling the \texttt{SIGPROF} signal can be any thread of the Java process being profiled. Even the threads responsible for garbage collection and \textit{just-in-time} compilation. In such cases, the samples are discarded as such samples do not provide informative results.
 
 \subsection{Current limitations}
 \TODO{Citation needed for GNU time.}
 \TODO{https://lwn.net/Articles/549593/ citate jiffy definition}
 Current implementation of Honest Profiler makes use of the standard interval timer from GNU time library and UNIX operating system signals to periodically call the \texttt{AsyncGetCallTrace} method. This implies that the lowest \texttt{AsyncGetCallTrace} call interval is the time between two ticks of the system timer interrupt (\textit{jiffy}). This duration depends on the clock interrupt frequency of the hardware platform being used. Default clock frequency for Linux based operating systems (since kernel version 2.6.13) is 250 Hz which results in $\frac{1}{250} = 0.004$ seconds for the duration of a jiffy. \cite{linux_time} In such configuration, Honest Profiler would be able to obtain a sample every 4 milliseconds.
 
-\TODO{Cite the linux source for posix cpu timers}
 \TODO{Describe that the cpu time profiling is both a curse and a blessing due to only threads on CPU are getting profiled but the method is so cheap that we get more samples because of it}
 \TODO{Cant get callback from timer more often tahn HZ but can ask clock from timer}
 
-% since the clock maintained by the kernel measures time in jiffies.
 
 \subsection{\texttt{AsyncGetCallTrace} performance analysis}
-\TODO{One of ASCGT pros is that it is incredibly cheap when compared to other profiling methods. Should find out how cheap it actually is. Needs brainstorming how to show its 'cheapness'}
-\TODO{Actually build a custom OpenJDK and measure and persist the average execution time of ASGCT. Also figure out why is it useful. Maybe even deserves a separate section due to its extent}
-\TODO{Describe what and why are being measured and how it is being measured}
+Prior to increasing the sampling frequency, it is important to understand to what are the performance limitations that calling the \texttt{AsyncGetCallTrace} would imply. It is necessary to understand how long does a call to the \texttt{AsyncGetCallTrace} method take  to ensure that increasing the sampling frequency will not cause excessive performance overhead to the application being profiled. In order to measure the execution time, a custom OpenJDK build with CPU time based time measurement logic was added to the \texttt{AsyncGetCallTrace} method. The added timing functionality can be observed in listing ~\ref{lst:asgct_time}.
+
+\TODO{Verify that this listing is entirely on the same page before shipping final version}
+\begin{lstlisting}[language=C++,style=def,label={lst:asgct_time}, caption={CPU time based measurement in \texttt{AsyncGetCallTrace} method}]
+void AsyncGetCallTrace(ASGCT_CallTrace *trace, jint depth, void* ucontext) {
+    struct timespec start, stop;
+    clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
+
+    // AsyncGetCallTrace method code
+    
+    clock_gettime(CLOCK_THREAD_CPUTIME_ID, &stop);
+    long accum = stop.tv_nsec - start.tv_nsec;
+    printf("%li", accum);
+}
+\end{lstlisting}
+
+Testing shows that a single \texttt{AsyncGetCallTrace} method call takes 4.6 microseconds on average.
 
 \subsubsection{Implications of the performance analysis}
+Previously described limitations and \texttt{AsyncGetCallTrace} performance measurements do not expose apparent problems or reasons on why \texttt{AsyncGetCallTrace} can not be called more frequently during profiling.
 \TODO{improvement preqreuisities (ok overhead)}
 \TODO{Consider splitting the perf analysis to separate section}
 \TODO{Explain results}
