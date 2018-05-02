@@ -3,32 +3,22 @@
 
 \begin{document}
 
-\TODO{Upon reaching here, it should be clear that ASGCT is good shit}
-\TODO{What's the probelm? what can we cdo to improve?}
-
-Honest Profiler \cite{hon_prof} is a software written in Java and C++ which aims to gather honest and accurate samples from a running Java application. Moreover, Honest Profiler is licensed under an open source license which encourages the community to further investigate and develop this software solution.
+Honest Profiler \cite{hon_prof} is a software written in Java and C++ which aims to gather honest and accurate samples from a running Java application to provide an overview of the application's performance. Honest Profiler uses the \texttt{Async\-Get\-Call\-Trace} method for obtaining the samples. Moreover, Honest Profiler is licensed under an open source license which encourages the community to further investigate and develop this software solution. The fact that Honest Profiler is an open source software and utilizes a safepoint bias free method for obtaining the samples are the main reasons why this particular software is chosen for improvements and optimizations in this thesis.
 
 \subsection{Architecture}
 Honest Profiler cosists of two larger components: a JVMTI native agent and a Java facade for result visualization, analysis and transformation. The profiling is almost completely done by the agent whereas the Java facade component aims to provide tools to ease the use of the profiler.
 
-\subsubsection{JVMTI agent}
-JVMTI agent is a dynamic library which serves as a client of the JVM Tooling Interface. \cite{jvmtm} JVMTI provides these agents means to investigate and control the applications running on the Java Virtual Machine. Since the agents are written in native languages such as C and C++, they can also utilize various operating system's tools.
+The JVMTI agent is a dynamic library which serves as a client of the JVM Tooling Interface. \cite{jvmtm} JVMTI provides these agents means to investigate and control the applications running on the Java Virtual Machine. Since the agents are written in native languages such as C and C++, they can also utilize various operating system's tools.
 
 Honest Profiler relies on UNIX operating system signals and timers for obtaining samples.
 It sets up a signal handler to handle \texttt{SIGPROF} signals sent to the Java process that the agent is attached to and an interval timer which sends the \texttt{SIGPROF} signal to that same process periodically. 
 
-\TODO{arbitrary thread handling cite; Advanced Programming in the UNIX® Environment: Second Edition By W. Richard Stevens, Stephen A. Rago}
-Upon receiving a signal, an \textit{arbitrary} thread currently executing on the CPU will handle the signal. The signal handler proceeds to call \texttt{AsyncGetCallTrace} method from the JVMTI API to obtain the call trace of the current thread which is handling the signal. The obtained call trace is then persisted.
+Upon receiving a signal, an \textit{arbitrary} thread currently executing on the CPU will handle the signal. \cite{stevens_advanced_2013} The signal handler proceeds to call \texttt{AsyncGetCallTrace} method from the JVMTI API to obtain the call trace of the current thread which is handling the signal. The obtained call trace is then persisted.
 
 It is worth mentioning that the thread handling the \texttt{SIGPROF} signal can be any thread of the Java process being profiled. Even the threads responsible for garbage collection and \textit{just-in-time} compilation. In such cases, the samples are discarded as such samples do not provide informative results.
 
 \subsection{Current limitations}
-\TODO{Citation needed for GNU time.}
-\TODO{https://lwn.net/Articles/549593/ citate jiffy definition}
-Current implementation of Honest Profiler makes use of the standard interval timer from GNU time library and UNIX operating system signals to periodically call the \texttt{AsyncGetCallTrace} method. This implies that the lowest \texttt{Async\-Get\-Call\-Trace} call interval is the time between two ticks of the system timer interrupt (\textit{jiffy}). This duration depends on the clock interrupt frequency of the hardware platform being used. Default clock frequency for Linux based operating systems (since kernel version 2.6.13) is 250 Hz which results in $\frac{1}{250} = 0.004$ seconds for the duration of a jiffy. \cite{linux_time} In such configuration, Honest Profiler would be able to obtain a sample every 4 milliseconds.
-
-\TODO{Describe that the cpu time profiling is both a curse and a blessing due to only threads on CPU are getting profiled but the method is so cheap that we get more samples because of it}
-\TODO{Cant get callback from timer more often tahn HZ but can ask clock from timer}
+Current implementation of Honest Profiler makes use of the standard interval timer from GNU time library and UNIX operating system signals to periodically call the \texttt{AsyncGetCallTrace} method. This implies that the lowest possible \texttt{Async\-Get\-Call\-Trace} method call interval is the time between two ticks of the system timer interrupt (\textit{jiffy}). This duration depends on the clock interrupt frequency of the hardware platform being used. Default clock frequency for Linux based operating systems (since kernel version 2.6.13) is 250 Hz which results in $\frac{1}{250} = 0.004$ seconds for the duration of a jiffy. \cite{linux_time} In such configuration, Honest Profiler would be able to obtain a sample every 4 milliseconds.
 
 
 \subsection{\texttt{AsyncGetCallTrace} performance analysis}
