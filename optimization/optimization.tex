@@ -3,11 +3,26 @@
 
 \begin{document}
 
-\subsection{Signal handling based on wall clock}
-\TODO{Describe SIGALRM approach. Describe the additional bias it introduces.}
+This sections described three different approaches for increasing the sampling frequency for Honest Profiler.
+
+\subsection{Interval timer based on real time}
+Existing implementation of Honest Profiler uses CPU time based interval timer from GNU time library. Alternative approach would be to use an interval timer which counts time in real time instead. The very same interval timer from GNU time library can be configured in such way that it counts down in real time by initilizing it with \texttt{ITIMER\_REAL} flag in the manner as shown in listing ~\ref{lst:itimer_real}.
+
+\begin{lstlisting}[language=C++,style=def,label={lst:itimer_real}, caption={Timer initialization based on real time}]
+#include <sys/time.h>
+struct itimerval timer;
+setitimer(ITIMER_REAL, &timer, 0)
+\end{lstlisting}
+
+Upon timer expiration, a \texttt{SIGALRM} signal is sent to the process.\cite{getitimer2}
+
+Using real time based timer means that its interval is not limited by the system's clock frequency as it would be for CPU time based timers. Due to this fact, the timer can even be configured to send the \texttt{SIGALRM} signal every 1 microsecond.
+
+Although this approach obtains considerably larger amount of samples due to higher profiling frequency, it also introduces a potential bias that could affect the profiling results. It might be possible that between the two consecutive timer expiration signals, the observable application has not received any processor time to perform its instructions. This would imply that the same sample in the exact same state is persisted multiple times. Similar issue occurs the other way around when the application's instructions are executed on multiple processor cores. There is a clear distinction in cases in which 4 processor cores are fully utilized executing the application's instructions and cases in which a single processor core is used. The former scenario would get roughly four times as much work done when compared to the latter scenario. However, the real time based timer will not take therse workload differences into account because it measures time based on the real world clock.
+
 
 \subsection{Increasing the kernel clock frequency}
-\TODO{Cant get callback from timer more often tahn HZ but can ask clock from timer}
+\TODO{Cant get callback from timer more often than HZ but can ask clock from timer}
 
 \subsection{Profiler having shared memory with external timekeeping utility}
 
