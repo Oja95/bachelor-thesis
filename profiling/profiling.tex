@@ -164,14 +164,13 @@ The presence of a profiler could also change the way how the Java Virtual Machin
 
 \subsection{Sampling profiling compared to alternatives}
 
-An alternative approach for gathering performance information is using tracing profilers. Tracing profilers rely on observable application's bytecode instrumentation. Instrumentation is the act of adding additional instructions to the observable application to gather relevant profiling information. Tracing profilers instrument the observable application by wrapping method calls with instructions to measure method execution time. Result is a collection of call stack with included precise method timings. \TODO{Having tracing profiling often requires the knowledge 'where to look'. As in, for XRebel, we are tracing the interesting stacks during a HTTP request or db query or whatnot, random tracing samples are not very informative (imo)}
+An alternative approach for gathering performance information is using tracing profilers. Tracing profilers rely on observable application's bytecode instrumentation. Instrumentation is the act of adding additional instructions to the observable application to gather relevant profiling information. Tracing profilers instrument the observable application by wrapping method calls with instructions to measure method execution time. Result is a collection of call stacks with included precise method timings. \cite{whitham_jack}
+
+Using tracing profilers usually requires the user or the profiler to know the application elements that are worth profiling as instrumenting all the methods in the observable application is too expensive performance wise. 
 
 Downside of tracing profiling is its performance and its susceptibility to observer effect. Depending on the level of information detail and the amount of instrumentation performed, requiring higher information granularity could potentially introduce impactful overhead to the application's performance which could result in inaccurate profiling results. 
 
 When comparing sampling profiling to tracing profiling, it excels with its performance. Sampling profilers can potentially obtain thousands of samples each second with negligible performance overhead.
-\TODO{More general overview, doesnt need to have 'where to look' know-how}
-%On the other hand, sampling profilers can extract significantly larger amount of information from the observable application without a major performance impact.
-
 
 \subsection{Sampling profiling possible implementations for the JVM}
 
