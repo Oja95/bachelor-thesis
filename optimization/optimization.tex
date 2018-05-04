@@ -49,16 +49,16 @@ The external server process starts by creating an UNIX domain socket and waits f
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\draw (0,0) rectangle (5,7) node at (2.5,6.5) {Java process};
-\draw (0.5,6.0) rectangle (4.5,4.5) node[text width=4cm] at (3,5.2) {Java application \\being profiled};
+\draw (0,0) rectangle (5,5.5) node at (2.5,5) {Java process};
+\draw (0.5,4.5) rectangle (4.5,3) node[text width=4cm] at (3,3.7) {Java application \\being profiled};
 
 \draw (0.5,2.0) rectangle (4.5,0.5) node[text width=4cm] at (3,1.2) {Honest Profiler \\native agent};
 
-\draw (9,0) rectangle (13,3) node[text width=4cm] at (11.5,1.5) {External server \\process};
+\draw (9,0) rectangle (13,2.5) node[text width=4cm] at (11.5,1.25) {External server \\process};
 
 \draw (0,-2.5) rectangle (13,-1.5) node[pos=.5] {Shared memory};
 
-\draw[->] (2.5,2) -- (2.5, 4.5) node[label={[label distance=0cm,rotate=-90]right:attached to}] at (2.6,4.4) {};
+\draw[->] (1.5,2) -- (1.5, 3) node[right, pos=0.5] at (2.6,4.4) {attached to};
 
 \draw[->] (9,1.75) -- (5,1.75) node[above, pos=.5] {\texttt{SIGALRM}};
 \draw[->] (5,1.75) -- (4.5,1.75);
