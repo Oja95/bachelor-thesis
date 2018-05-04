@@ -22,9 +22,60 @@ Although this approach obtains considerably larger amount of samples due to high
 
 
 \subsection{Increasing the kernel clock frequency}
-\TODO{Cant get callback from timer more often than HZ but can ask clock from timer}
+As CPU time based interval timer from GNU timer library is directly dependent on the kernel's internal timer frequency, one approach to gather more samples to build a custom kernel with increased kernel clock frequency. By default this frequency is set to 250 Hz.\cite{torvalds_linux:_2018} This value can be increased to achieve higher sampling frequency. 
 
-\subsection{Profiler having shared memory with external timekeeping utility}
+This can be accomplished by creating a custom configuration in the \texttt{Kconfig.hz} with a desired frequency value and building the kernel using the created configuration. An easier way to obtain a kernel with higher kernel timer frequency would be to install a \texttt{linux-lowlatency} kernel package which has set the kernel timer frequency to 1000 Hz.
+
+Using the 1000 Hz kernel increases the sampling frequency as the CPU time based interval timer from GNU time library can now send an interrupt signal every $\frac{1}{1000} = 0.001$ seconds. Experiments with such kernel has shown four times increase in the amount of samples gathered wihtout causing significant performance overhead to the observable application.
+\TODO{Testing results}
+
+\subsection{External utility for timekeeping}
+This approach moves the time measurement logic to an external server process which uses UNIX operating system signals and shared memory to communicate with Honest Profiler and the profileable Java process. The solution is based on the fact that it is possible for a process to obtain the CPU time that the process has used without the limitations imposed by the kernel's internal timer frequency. The CPU time spent by a process can be obtained by calling the \texttt{clock\_\-gettime} function from the GNU time library.
+
+This solution has two benefits over the default implementation of Honest Profiler:
+\begin{enumerate}
+	\item Extracting the interval timing logic from the Honest Profiler native agent reduces performance overhead caused to the observable Java process
+	\item Enables calling \texttt{Async\-Get\-Call\-Trace} method more often than default implementation
+\end{enumerate}
+
+\subsubsection{Implementation}
+The external server process starts by creating an UNIX domain socket and waits for a connection. Upon a connection from the observable Java process with Honest Profiler's native agent attached, it obtains its process identifier (\textit{pid}) for signal sending purposes. The server process then allocates a memory section which is shared with the profileable Java process. Server will then use two signals to request action from the Honest Profiler that is attached to the Java process:
+\TODO{Signal handler safety worth mentioning?}
+\begin{itemize}
+	\item \texttt{SIGALRM} - write the used CPU time used by the Java process to the shared memory
+	\item \texttt{SIGPROF} - call the \texttt{Async\-Get\-Call\-Trace} method to obtain a sample from the thread handling the signal
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\draw (0,0) rectangle (5,7) node at (2.5,6.5) {Java process};
+\draw (0.5,6.0) rectangle (4.5,4.5) node[text width=4cm] at (3,5.2) {Java application \\being profiled};
+
+\draw (0.5,2.0) rectangle (4.5,0.5) node[text width=4cm] at (3,1.2) {Honest Profiler \\native agent};
+
+\draw (9,0) rectangle (13,3) node[text width=4cm] at (11.5,1.5) {External server \\process};
+
+\draw (0,-2.5) rectangle (13,-1.5) node[pos=.5] {Shared memory};
+
+\draw[->] (2.5,2) -- (2.5, 4.5) node[label={[label distance=0cm,rotate=-90]right:attached to}] at (2.6,4.4) {};
+
+\draw[->] (9,1.75) -- (5,1.75) node[above, pos=.5] {\texttt{SIGALRM}};
+\draw[->] (5,1.75) -- (4.5,1.75);
+\draw[->] (9,0.75) -- (5,0.75) node[above, pos=.5] {\texttt{SIGPROF}};
+
+\draw[->] (1.5,0.5) -- (1.5,-1.5) node[right, pos=0.63] {write used CPU time};
+\draw[->] (12,-1.5) -- (12, 0) node[left, pos=0.5] {read used CPU time};
+
+%\draw[->] (-0.1,-0.5) -- (14.5, -0.5) node[below, pos=.5] {Time};
+
+
+\end{tikzpicture}
+\caption{Architecture of the concept}
+\label{fig:shared_mem_arctitecture}
+\end{figure}
+
+\TODO{sleeping logic to reduce overhead}
 
 
 \end{document}
