@@ -2,8 +2,6 @@
 \documentclass[..thesis.tex]{subfiles}
 
 \begin{document}
-Profiling is an activity which aims to identify performance issues in an observable program. This task often relies of specific tools called profilers for extracting information from the program's execution. The output of the profiler helps to identify and locate the methods that have the largest effect on the program's execution time. Such methods are usually worth investigating as they affect the application's performance the most. \cite{mytkowicz_evaluating_2010}
-
 Sampling profilers are a type of profiles which gather call traces from the observable program at varying intervals. A sample in the form of a call trace is a representation of a single thread's state at a particular moment in time. A simple call trace of a thread can be observed in listing ~\ref{lst:stack_trace}. 
 
 \begin{lstlisting}[style=def,label={lst:stack_trace}, caption={Call trace of a thread}]
@@ -137,8 +135,7 @@ Safepoints in the Java Virtual Machine are defined as points during the program'
 
 The execution of the code sample in listing ~\ref{lst:safepoint} illustrates this issue well. 
 \TODO{Verify that this code snippet is completely rendered on the same page in the final version}
-
-
+\TODO{Nested loop in the example is confusing, simplify and reproduce}
 \begin{lstlisting}[language=java,style=def,label={lst:safepoint}, caption={Counted loops do not contain safepoints}]
 int k = 0;
 for (int i = 0; i < Integer.MAX_VALUE; i++) {
