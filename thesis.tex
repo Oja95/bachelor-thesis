@@ -156,8 +156,33 @@ the paper is significantly enhanced by their inclusion.}
 \renewcommand{\thesubsection}{\Alph{subsection}}
 \subfile{appendix/appendix.tex}
 \pagebreak
-\section*{\small Non-exclusive licence to reproduce thesis and make thesis public}
+\section*{Non-exclusive licence to reproduce thesis and make thesis public}
 
-\TODO{License}
+% https://tex.stackexchange.com/a/78845
+\renewcommand{\labelenumii}{\theenumii}
+\renewcommand{\theenumii}{\theenumi.\arabic{enumii}.}
+
+I, \textbf{Tiit Oja},
+
+\begin{enumerate}
+	\item herewith grant the University of Tartu a free permit (non-exclusive licence) to:
+
+	\begin{enumerate}[label*=\arabic*.]
+		\item reproduce, for the purpose of preservation and making available to the public, including for addition to the DSpace digital archives until expiry of the term of validity of the copyright, and
+
+		\item make available to the public via the web environment of the University of Tartu, including via the DSpace digital archives until expiry of the term of validity of the copyright,
+	\end{enumerate}
+
+	\textbf{\articleName},
+
+	supervised by \textbf{Vootele Rõtov} and \textbf{Vesal Vojdani},
+
+	\item I am aware of the fact that the author retains these rights.
+	\item I certify that granting the non-exclusive licence does not infringe the intellectual property rights or rights arising from the Personal Data Protection Act.
+\end{enumerate}
+
+\noindent
+Tartu, dd.mm.yyyy
+\TODO{Add date}
 
 \end{document}

@@ -141,3 +141,5 @@
 \usepackage{xspace}
 
 \usepackage{tikz,pgfplots}
+
+\usepackage{enumitem}% http://ctan.org/pkg/enumitem
