@@ -6,7 +6,7 @@
 This sections describes three different approaches for increasing the sampling frequency for Honest Profiler. To verify the performance overhead of the solution and its accuracy, a benchmark test was executed on each solution.
 
 \subsection{Benchmark}
-Benchmark test reads 10000000 random integers from an input file and then performs quicksort on the copy of the obtained list of integer 10 times. All tests are performed on a machine running Intel i5-5200U CPU with 8 GB of RAM.
+Benchmark test reads 10000000 random integers from an input file and then performs quicksort on the copy of the obtained list of integer 10 times. Benchmark test code is included in appendix \ref{B:benchmark-test-code}. All tests are performed on a machine running Intel i5-5200U processor with 8 GB of RAM.
 
 Baseline of the test using the default implementation of the Honest Profiler finished the test in 74.72 seconds on average. During profiling, 19025 samples were obtained on average from which 15130 (81\%) contained frames of interest.
 Profiling results are visualized on the figure ~\ref{fig:baseline} on page ~\pageref{fig:baseline}.
@@ -46,13 +46,14 @@ Average benchmark runtime using this method finished in 82.36 seconds and obtain
 \end{figure}
 
 \subsubsection{Increasing the kernel clock frequency}
+\label{kernel-clock}
 As CPU time based interval timer from GNU timer library is directly dependent on the kernel's internal timer frequency, one approach to gather more samples to build a custom kernel with increased kernel clock frequency. By default this frequency is set to 250 Hz.\cite{torvalds_linux:_2018} This value can be increased to achieve higher sampling frequency. 
 
 This can be accomplished by creating a custom configuration in the \texttt{Kconfig.hz} with a desired frequency value and building the kernel using the created configuration. An easier way to obtain a kernel with higher kernel timer frequency would be to install a \texttt{linux-lowlatency} kernel package which has set the kernel timer frequency to 1000 Hz.
 
 Using the 1000 Hz kernel increases the sampling frequency as the CPU time based interval timer from GNU time library can now send an interrupt signal every $\frac{1}{1000} = 0.001$ seconds. Experiments with such kernel has shown four times increase in the amount of samples gathered wihtout causing significant performance overhead to the observable application.
 
-Benchmark runs on such configuration had average runtime of 77.33 seconds during which 70525 samples were collected. 50937 of the samples (72\%) consisted of meaningful samples. Visualization from a runtime using such profiling configuration is shown on figure ~\ref{fig:hz_increase} on page ~\pageref{fig:hz_increase}.
+Benchmark runs on such configuration had average runtime of 77.33 seconds during which 70525 samples were collected. 50937 of the samples (72\%) consisted of meaningful samples. When comparing to the baseline bechmark results, this solution resulted in 336\% increase in useful samples with negligible performance overhead. Visualization from a runtime using such profiling configuration is shown on figure ~\ref{fig:hz_increase} on page ~\pageref{fig:hz_increase}.
 \begin{figure}[H]
 \includegraphics[scale=0.375]{hz_increase.png}
 \caption{Visualization of the results from profiling with increased kernel timer frequency}
@@ -110,6 +111,15 @@ Figure ~\ref{fig:shared_mem_arctitecture} on page ~\pageref{fig:shared_mem_arcti
 
 \TODO{sleeping logic to reduce overhead worth mentioning?}
 
-Testing shows that such modification for Honest Profiler runs the benchmark test in 72.16 seconds on average.
+Testing shows that such modification for Honest Profiler runs the benchmark test in 72.64 seconds on average which is better than the baseline benchmark execution time. This can be credited to the fact that time measurement logic has been extracted from the Honest Profiler's logic which means that the Java process will have to execute fewer amount of instructions. From running the benchmark test, a sample was obtained roughly after every 100 microseconds. 746868 samples were obtained during profiling and 38775 (5.2\%) of them were useful. This approach obtained 256\% more useful samples than the baseline benchmark.
+
+Visualization of the profiling results from the benchmark run using this solution can be observed in figure ~\ref{fig:shared-mem-results} on page ~\pageref{fig:shared-mem-results}.
+\begin{figure}[H]
+\includegraphics[scale=0.27]{shared_mem_results.png}
+\caption{Visualization of the external timekeeping based solution profiling results}
+\label{fig:shared-mem-results}
+\end{figure} 
+
+Whereas this approach is slighty less cumbersome to set up than installing a custom kernel as demonstrated in section \ref{kernel-clock}, the small percentage of useful samples of all samples obtained indicates to problems in this implementation which are briefly covered in the section \ref{sec:future-research}.
 
 \end{document}
