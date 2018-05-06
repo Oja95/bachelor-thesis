@@ -40,7 +40,7 @@ void AsyncGetCallTrace(ASGCT_CallTrace *trace, jint depth, void* ucontext) {
 
 Testing shows that a single \texttt{AsyncGetCallTrace} method call takes 4.6 microseconds on average.
 
-\subsubsection{Implications of the performance analysis}
+\subsection{Implications of the performance analysis}
 Previously described limitations and \texttt{Async\-Get\-Call\-Trace} method performance measurements do not expose apparent problems or reasons on why \texttt{Async\-Get\-Call\-Trace} method can not be called more frequently during profiling. As the \texttt{Async\-Get\-Call\-Trace} method execution time is significantly smaller when compared to the default lowest achieveable sampling interval, it can be safely assumed that having smaller profiling interval will not affect the observable application's performance to a great extent. Thus, achieving higher sampling frequency is a goal worth pursuing.
 
 \end{document}
