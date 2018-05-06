@@ -3,6 +3,7 @@
 \begin{document}
 
 \subsection{Source code}
+\label{B:source-code}
 All optimization implementations for Honest profiler are available at the following GitHub repository:
 
 \url{https://github.com/Oja95/honest-profiler}
@@ -10,11 +11,39 @@ All optimization implementations for Honest profiler are available at the follow
 External server implementation for the shared memory solution described in section \ref{shared-mem} is available at the following GitHub respository:
 
 \url{https://github.com/Oja95/honest-profiler-shared-mem-server}
-%\label{A:sample-code}
-%\begin{lstlisting}[language=C,style=def]
-%#include <linux/kernel.h>
-%// Sample code
-%\end{lstlisting}
+
+\subsection{Benchmark test code}
+\label{B:benchmark-test-code}
+
+\begin{lstlisting}[language=Java,style=def]
+package ee.ut.sorting;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.stream.Collectors;
+import java.util.*;
+
+public class Main {
+  public static void main(String[] args) throws IOException {
+    long totalStart = System.nanoTime();
+
+    List<Integer> sortableList = Files.readAllLines(Paths.get("/tmp/integers.data"), StandardCharsets.UTF_8)
+            .stream().mapToInt(x -> Integer.parseInt(x.trim())).boxed().collect(Collectors.toList());
+
+    for (int i = 0; i < 10; i++) {
+      QuickSorterImpl<Integer> integerQuickSorter = new QuickSorterImpl<>();
+      long start = System.nanoTime();
+      integerQuickSorter.sort(new ArrayList<>(sortableList));
+      long end = System.nanoTime() - start;
+      System.out.println(end);
+    }
+    long totalEnd = System.nanoTime() - totalStart;
+    System.out.println(totalEnd);
+  }
+}
+
+\end{lstlisting}
 
 \newpage
 \end{document}
