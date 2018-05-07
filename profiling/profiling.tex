@@ -128,6 +128,7 @@ This problem occurs when the sampling interval catches on to some program's rout
 Possible way to tackle this problem would be to randomize the sampling interval by having a random number of time units offseting the sampling interval. Increasing sample gathering frequency will also help to alleviate this problem.
 
 \subsubsection{Safepoint bias}
+Sampling profiling assumes that the obtained samples are acquired randomly. When gathering samples from a program running on the Java Virtual Machine, one must take \textit{safepoints} into consideration.
 
 Sampling profiling assumes that samples are gathered randomly as bias in the samples could potentially yield inaccurate results. When gathering samples from a program running on the Java Virtual Machine (JVM), one must take \textit{safepoints} into consideration. 
 
