@@ -9,10 +9,11 @@ This sections describes three different approaches for increasing the sampling f
 Benchmark test reads 10000000 random integers from an input file and then performs quicksort on the copy of the obtained list of integer 10 times. Benchmark test code is included in appendix \ref{B:benchmark-test-code}. All tests are performed on a machine running Intel i5-5200U processor with 8 GB of RAM.
 
 Baseline of the test using the default implementation of the Honest Profiler finished the test in 74.72 seconds on average. During profiling, 19025 samples were obtained on average from which 15130 (81\%) contained frames of interest.
+\supervisor{frames of interest -- we should reference to definition we have given here imho. Forward reference to future research would be possible, but I would prefer to reference backwards.}
 Profiling results are visualized on the figure ~\ref{fig:baseline} on page ~\pageref{fig:baseline}.
-\TODO{Before shipping final, verify that the pictures are positioned well}
-\TODO{Is defining test machine specs necessary?}
-\TODO{Is it better to move benchmark profiling result visualizations to appendices?}
+\TODO{Before shipping final, verify that the pictures are positioned well} \supervisor{See that page refs make sense, if same page then just omit}
+\TODO{Is defining test machine specs necessary?} \supervisor{Would but the spec to appendix, no one will care :D}
+\TODO{Is it better to move benchmark profiling result visualizations to appendices?} \supervisor{I would leave them here. These are easily graspable indications that we seem to not have messed everything up in what we did. Plus, they look pretty and make the text less tense.}
 
 \begin{figure}[H]
 \includegraphics[scale=0.335]{baseline.png}
@@ -31,6 +32,8 @@ Existing implementation of Honest Profiler uses CPU time based interval timer fr
 struct itimerval timer;
 setitimer(ITIMER_REAL, &timer, 0)
 \end{lstlisting}
+
+\supervisor{Not sure if this listing has a point, if you have no context, it is just bunch of giberish?}
 
 Upon timer expiration, a \texttt{SIGALRM} signal is sent to the process.\cite{getitimer2}
 
@@ -67,12 +70,13 @@ This approach moves the time measurement logic to an external server process whi
 
 This solution has two benefits over the default implementation of Honest Profiler:
 \begin{enumerate}
-	\item Extracting the interval timing logic from the Honest Profiler native agent reduces performance overhead caused to the observable Java process
+	\item Extracting the interval timing logic from the Honest Profiler native agent reduces performance overhead caused to the observable Java process \supervisor{Not so sure about this, we are kinda taking the timekeeping from the kernel and putting it to external process -- in any case, it would be outside the running profile? Or is there something else that you specifically had in mind?}
 	\item Enables calling \texttt{Async\-Get\-Call\-Trace} method more often than default implementation
 \end{enumerate}
 
-The external server process starts by creating an UNIX domain socket and waits for a connection. Upon a connection from the observable Java process with Honest Profiler's native agent attached, it obtains its process identifier (\textit{pid}) for signal sending purposes. The server process then allocates a memory section which is shared with the profileable Java process. Server will then use two signals to request action from the Honest Profiler that is attached to the Java process:
+The external server process starts by creating an UNIX domain socket and waits for a connection. Upon a connection from the observable Java process with Honest Profiler's native agent attached, it obtains its process identifier (\textit{pid}) \supervisor{I think PID is more common than pid} for signal sending purposes. The server process then allocates a memory section which is shared with the profileable Java process. Server will then use two signals to request action from the Honest Profiler that is attached to the Java process:
 \TODO{Signal handler safety worth mentioning?}
+\supervisor{I would skip the safety, implementation details?}
 \begin{itemize}
 	\item \texttt{SIGALRM} - write the used CPU time used by the Java process to the shared memory
 	\item \texttt{SIGPROF} - call the \texttt{Async\-Get\-Call\-Trace} method to obtain a sample from the thread handling the signal
@@ -110,6 +114,7 @@ Figure ~\ref{fig:shared_mem_arctitecture} on page ~\pageref{fig:shared_mem_arcti
 \end{figure}
 
 \TODO{sleeping logic to reduce overhead worth mentioning?}
+\supervisor{I do not think so}
 
 Testing shows that such modification for Honest Profiler runs the benchmark test in 72.64 seconds on average which is better than the baseline benchmark execution time. This can be credited to the fact that time measurement logic has been extracted from the Honest Profiler's logic which means that the Java process will have to execute fewer amount of instructions. From running the benchmark test, a sample was obtained roughly after every 100 microseconds. 746868 samples were obtained during profiling and 38775 (5.2\%) of them were useful. This approach obtained 256\% more useful samples than the baseline benchmark.
 
