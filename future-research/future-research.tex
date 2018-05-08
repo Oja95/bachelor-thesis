@@ -1,9 +1,10 @@
 \documentclass[..thesis.tex]{subfiles}
 
 \begin{document}
-This thesis did not focus on evaluating the accuracy of the provided solutions. For future studies, investigating the accuracy of the provided solutions based on the ideas brought out in the Mytkowicz's paper on profiler accuracy evaluation \cite{mytkowicz_evaluating_2010} could improve the practical value of these solutions.
+This thesis did not focus on evaluating the accuracy of the provided solutions. For future studies, investigating the accuracy of the provided solutions based on the ideas brought out in the Mytkowicz's paper on profiler accuracy evaluation \cite{mytkowicz_evaluating_2010} could improve the practical value of these solutions
 
-Additionally, during testing the solutions, a problem with large amount of unusable samples occurred. Namely, since the \texttt{SIGPROF} signal sent to the profileable process is sent to an \textit{arbitrary} thread then it is possible that the signal is handled by a thread which is not able to provide a call trace sample that could be used in results' visualization. Unusable sample is obtained when the \texttt{Async\-Get\-Call\-Trace} result a negative return value which mostly happens in the following cases:
+Additionally, during testing the solutions, a problem with large amount of unusable samples occurred. \supervisor{I would not call it a problem, that frames it in negativity. But it would be great to achieve the same rate as for default honest profiler or at least figure out what causes the increase. Currently, we just have a fact that there are, as a precentage, smaller number of ``useful'' numbers and no real explanation. Maybe it is normal, maybe it is bad :)}
+\supervisor{Also, can we somehow tie this more strongly with the first paragraph? In essence, this thesis focused on pumping stuff out of JVM, next we would like to see if it is correct stuff.}Namely, since the \texttt{SIGPROF} signal sent to the profileable process is sent to an \textit{arbitrary} thread then it is possible that the signal is handled by a thread which is not able to provide a call trace sample that could be used in results' visualization. Unusable sample is obtained when the \texttt{Async\-Get\-Call\-Trace} result a negative return value which mostly happens in the following cases:
 \TODO{Should present all cases or most common ones would suffice?}
 \begin{enumerate}
 	\item \texttt{SIGPROF} signal is sent to a non-Java thread such as native threads for just-in-time compilation and garbage collection
@@ -11,9 +12,10 @@ Additionally, during testing the solutions, a problem with large amount of unusa
 	\item \texttt{SIGPROF} signal is sent to a thread which is exiting
 	\item \texttt{SIGPROF} signal is sent to a thread whose stack trace is not walkable
 \end{enumerate}
+\supervisor{As written previously, I would move this forward.}
 
 Future studies could investigate the signals emitted and investigate the distribution of threads which are handling the signal and block the threads from handling the profiling signal as they will not provide usable stack traces for profiling results.
-For example, patching the main thread loop in the Java Virtual Machine initialization using the construct shown in listing ~\ref{lst:sigmask} decreases the amount of unusable samples by a noticeable margin due to the fact that this thread can not handle the profiling signal sent by Honest Profiler. A promising idea would be to investigate the initialization of native threads within Java Virtual Machine and disable handling of the profiling signal.
+For example, patching the main thread loop in the Java Virtual Machine initialization using the construct shown in listing ~\ref{lst:sigmask} decreases the amount of unusable samples by a noticeable margin due to the fact that this thread can not handle the profiling signal sent by Honest Profiler. A promising idea would be to investigate the initialization of native threads within Java Virtual Machine and disable handling of the profiling signal. \supervisor{I would expand on why we should do it, what is there to be gained..}
 
 \begin{lstlisting}[language=C++,style=def,label={lst:sigmask}, caption={Blocking the \texttt{SIGPROF} signal for a thread}]
 sigset_t mask;
@@ -21,4 +23,7 @@ sigemptyset(&mask);
 sigaddset(&mask, SIGPROF);
 pthread_sigmask(SIG_BLOCK, &mask, NULL)
 \end{lstlisting}
+
+\supervisor{This is also very hard to read without context.}
+
 \end{document}
