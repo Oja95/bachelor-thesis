@@ -134,9 +134,9 @@ Sampling profiling assumes that the obtained samples are acquired uniformly and 
 
 Safepoints in the Java Virtual Machine are defined as points during the program's execution during which all of the threads are in a consistent and well known state. Safepoints are necessary for various Java Virtual Machine's operations such as the garbage collection, method deoptimization and class redefinition.\cite{hotspot_glossary} It has been shown that most of the existing Java profilers require the Java Virtual Machine to be stopped on a safepoint in order to obtain the call trace sample from the profileable thread.\cite{wakart_psychosomatic_2016} However, this mechanism also casts a shadow on the profling results as this implies that the samples are not acquired randomly but rather require the Java Virtual Machine to be in a specific state. \cite{mytkowicz_evaluating_2010}
 
-The execution of the code sample in listing ~\ref{lst:safepoint} illustrates this issue well. 
+The execution of the code sample in listing ~\ref{lst:safepoint} illustrates this issue well. The nested loop in this example is to avoid Java compiler specific optimizations.
 \TODO{Verify that this code snippet is completely rendered on the same page in the final version}
-\TODO{Nested loop in the example is confusing, simplify and reproduce} \supervisor{Can just add a comment} \TODO{Ask Vootele what comment he means here?}
+
 \begin{lstlisting}[language=java,style=def,label={lst:safepoint}, caption={Counted loops do not contain safepoints}]
 int k = 0;
 for (int i = 0; i < Integer.MAX_VALUE; i++) {
@@ -162,16 +162,34 @@ Firstly, a profiler does introduce some performance overhead due to its nature. 
 %  \supervisor{This is undefined definition at this point. Maybe try to give a simple defitiniot beforehand? something ``in contrast to sampling profiler'' Or try to move some of the definition in next paragraph earlier?} 
 
 \TODO{Check phrasing of the following paragraph with supervisors}
-The presence of a profiler could also change the way how the Java Virtual Machine does its optimizations. Various information extracting functions  might change the way how the bytecode on the Java Virtual Machine is interpreted. \cite{mytkowicz_evaluating_2010} Thus, resulting in a different performance profile when compared to an application's runtime in which the profiler is not attached.
+The presence of a profiler could also change the way how the Java Virtual Machine does its optimizations. Java Virtual Machine makes use of just-in-time (JIT) compilation techniques during its runtime. JVM identifies methods which meet some criterias (e.g. called frequently) and compiles these methods into native machine code, resulting in an highly optimized code which improves the performance of such methods. \cite{understanding_jit} Various information extracting functions might change the way how the bytecode on the Java Virtual Machine is executed. \cite{mytkowicz_evaluating_2010} The presence of a profiler could alter which methods are eligible for JIT compilation. Thus, resulting in a different performance profile when compared to an application's runtime in which the profiler is not attached.
 
 %This factor affects sampling profilers as well but it is especially relevant for tracing profilers 
 
 \subsection{Sampling profiling compared to alternatives}
 
-An alternative approach for gathering performance information is using tracing profilers. Tracing profilers rely on observable application's bytecode instrumentation. Instrumentation is the act of adding additional instructions to the observable application to gather relevant profiling information. Tracing profilers instrument the observable application by wrapping method calls with instructions to measure method execution time. Result is a collection of call stacks with included precise method timings. \cite{whitham_jack}
+An alternative approach for gathering performance information is using tracing profilers. Tracing profilers rely on observable application's bytecode instrumentation. Instrumentation is the act of adding additional instructions to the observable application to gather relevant profiling information. Tracing profilers instrument the observable application by wrapping method calls with instructions to measure method execution time. Result is a collection of call stacks with included precise method timings. \cite{whitham_jack} Simplified idea of tracing profiler instrumentation is shown on figures ~\ref{lst:uninstrumented} and \ref{lst:instrumented}. Figure \ref{lst:uninstrumented} shows the source code of a simple method and figure \ref{lst:instrumented} shows how a tracing profiler could instrument the code shown on figure \ref{lst:uninstrumented} in order to obtain information about method execution time.
 
-\supervisor{Could use an example, some source code before and after instrumentation, on Java code level (added stopwatch start and stop or something)}
-\TODO{Add code sample}
+\begin{minipage}[b]{.45\textwidth}
+\begin{lstlisting}[language=java,style=def,label={lst:uninstrumented}, caption={Original source}]
+public void work() {
+  doWork();
+}
+\end{lstlisting}
+\end{minipage}\hspace{12mm}
+\begin{minipage}[b]{.45\textwidth}
+\begin{lstlisting}[language=java,style=def,label={lst:instrumented}, caption={Instrumented source}]
+public void work() {
+  long start = System.nanoTime();
+  doWork();
+  long end = System.nanoTime() - start;
+  // Profiler then persists the `end` value
+}
+\end{lstlisting}
+\end{minipage}
+%[language=java,style=def,label={lst:safepoint}, caption={Counted loops do not contain safepoints}]
+
+
 
 Using tracing profilers usually requires the user or the profiler to know the application elements that are worth profiling as instrumenting all the methods in the observable application is too expensive performance wise. 
 
@@ -184,30 +202,28 @@ When comparing sampling profiling to tracing profiling, it excels with its perfo
 \subsubsection{\texttt{jstack}}
 \texttt{jstack} is an utility included in the Oracle's JDK and OpenJDK by default. This utility can be used to print out stack traces of all threads of a Java process.\cite{jstack} The simplest implementation to show the concept of a sampling profiler would be to periodically call the \texttt{jstack} utility to obtain the snapshot of all threads. These snapshots can be persisted and processed to produce a visualization of the application's performance. This approach has a relatively high overhead when compared to other sampling profiling methods and is not a viable method for profiling real world applications but rather illustrates the concept of sampling profiling.
 
-\subsubsection{\texttt{AsyncGetCallTrace} profilers}
-\TODO{Cite signal safety man page}
-%\supervisor{Maybe a bit how it enables obtaining such a call trace, and that it is meant to be called from signal handlers (and hence he Asynch part)?}
-
-These kind of profilers make use of an undocumented JVM method \texttt{Async\-Get\-Call\-Trace} \cite{agct_source} which enables obtaining call traces from a thread without the safepoint bias. The asynchronous nature of this method enables the profiler to safely call this method in a signal handler which is the key architectural element for these kind of profilers.
-
-Due to safepoint bias free sample obtaining method, profiling samples tend to be more accurate since the JVM does not have to stop on a safepoint in order to obtain the call trace of the running thread. This method is a part of the JVM Tooling Interface (JVMTI) Application Programming Interface (API).
-
-Notable examples of such profilers which utilize \texttt{Async\-Get\-Call\-Trace} method  are Honest Profiler and Java Mission Control. 
-
-
 \subsubsection{\texttt{GetAllStackTraces} profilers}
-\supervisor{I would move this second, it is way more common than AsyncGetCallTrace profilers and seems to make sense to introduce it first? But maybe just personal preference.}
-\texttt{GetAllStackTraces} is a method in the official JVMTI API which can be used to extract the stack traces of all the threads currently executing on the JVM\cite{jvmti_doc}. Downside for this method is the fact that profilers utilizing this method are safepoint biased. For this reason, the performance is negatively affected due to frequent pauses for reaching safepoints.
+\texttt{GetAllStackTraces} is a method in the official JVM Tooling Interface (JVMTI) which is a programming interface utilized by development and monitoring tools. This method enables the profiler to extract the stack traces of all the threads currently executing on the JVM. \cite{jvmti_doc} Downside for this method is the fact that profilers utilizing this method are safepoint biased. For this reason, the performance is negatively affected due to frequent pauses for reaching safepoints.
 
 Due to safepoint induced performance problems, this method aquired significantly less samples when compared to profilers based on \texttt{Async\-Get\-Call\-Trace}. Additionally, profiling results might be biased due to the fact that the stack traces can only be obtained when the JVM has reached a safepoint.
 
 \texttt{GetAllStackTraces} is used in most commercial profilers such as JVisualVM, YourKit and JProfiler. \cite{visualvm} \cite{wakart_psychosomatic_2016}
 
+
+\subsubsection{\texttt{AsyncGetCallTrace} profilers}
+%\supervisor{Maybe a bit how it enables obtaining such a call trace, and that it is meant to be called from signal handlers (and hence he Asynch part)?}
+
+These kind of profilers make use of an undocumented JVM method \texttt{Async\-Get\-Call\-Trace} \cite{agct_source} which enables obtaining call traces from a thread without the safepoint bias. The asynchronous nature of this method enables the profiler to safely call this method in a signal handler which is the key architectural element for these kind of profilers. \cite{signal-safety7}
+
+Due to safepoint bias free sample obtaining method, profiling samples tend to be more accurate since the JVM does not have to stop on a safepoint in order to obtain the call trace of the running thread. This method is a part of the JVMTI API.
+
+Notable examples of such profilers which utilize \texttt{Async\-Get\-Call\-Trace} method  are Honest Profiler and Java Mission Control. 
+
 \subsubsection{Native profilers}
 %\supervisor{Connect the two sentences more strongy, like ``The main downside being'' or somethnig.}
-Native profilers are tools utilizing the low level abstractions of the operating system to  profile the native binaries for the operating system. These profilers are superior to the previously described methods performance wise but do fall short on the usefulness of the gathered information. The main downside of native profilers is the inability obtain sufficient information about the Java level stack frames executed inside the Java Virtual Machine. Unlike other sampling techiniques introduced, native profilers are not much use to debug a JVM where most of the code has not been yet optimized
+Native profilers are tools utilizing the low level abstractions of the operating system to  profile the native binaries for the operating system. These profilers are superior to the previously described methods performance wise but do fall short on the usefulness of the gathered information. The main downside of native profilers is the inability obtain sufficient information about the Java level stack frames executed inside the Java Virtual Machine. Unlike other sampling techiniques introduced, native profilers are not much use to profile applications running on the Java Virtual Machine where most of the code has not been optimized yet.
 
 %\TODO{Add example of native call trace to show that it is kind of useless} \supervisor{To be fair, one would have to give a sample such as one used with perf-map-agent}
 
-\supervisor{I would not bring in more here, let's leave it out of scope. Maybe add that ``unlike other sampling techiniques introduced, native profilers are not much use to debug a JVM where most of the code has not been yet optimized'' or something similar, to give a reason why we leave those out.} 
+%\supervisor{I would not bring in more here, let's leave it out of scope. Maybe add that ``unlike other sampling techiniques introduced, native profilers are not much use to debug a JVM where most of the code has not been yet optimized'' or something similar, to give a reason why we leave those out.} 
 \end{document}

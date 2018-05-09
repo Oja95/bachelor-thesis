@@ -14,6 +14,7 @@ External server implementation for the shared memory solution described in secti
 
 \subsection{Benchmark test code}
 \label{B:benchmark-test-code}
+All tests are performed on a machine running Intel i5-5200U processor with 8 GB of RAM.
 
 \begin{lstlisting}[language=Java,style=def]
 package ee.ut.sorting;
@@ -27,10 +28,8 @@ import java.util.*;
 public class Main {
   public static void main(String[] args) throws IOException {
     long totalStart = System.nanoTime();
-
     List<Integer> sortableList = Files.readAllLines(Paths.get("/tmp/integers.data"), StandardCharsets.UTF_8)
             .stream().mapToInt(x -> Integer.parseInt(x.trim())).boxed().collect(Collectors.toList());
-
     for (int i = 0; i < 10; i++) {
       QuickSorterImpl<Integer> integerQuickSorter = new QuickSorterImpl<>();
       long start = System.nanoTime();
