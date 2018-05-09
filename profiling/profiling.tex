@@ -203,11 +203,11 @@ When comparing sampling profiling to tracing profiling, it excels with its perfo
 \texttt{jstack} is an utility included in the Oracle's JDK and OpenJDK by default. This utility can be used to print out stack traces of all threads of a Java process.\cite{jstack} The simplest implementation to show the concept of a sampling profiler would be to periodically call the \texttt{jstack} utility to obtain the snapshot of all threads. These snapshots can be persisted and processed to produce a visualization of the application's performance. This approach has a relatively high overhead when compared to other sampling profiling methods and is not a viable method for profiling real world applications but rather illustrates the concept of sampling profiling.
 
 \subsubsection{\texttt{GetAllStackTraces} profilers}
-\texttt{GetAllStackTraces} is a method in the official JVM Tooling Interface (JVMTI) which is a programming interface utilized by development and monitoring tools. This method enables the profiler to extract the stack traces of all the threads currently executing on the JVM. \cite{jvmti_doc} Downside for this method is the fact that profilers utilizing this method are safepoint biased. For this reason, the performance is negatively affected due to frequent pauses for reaching safepoints.
+\texttt{GetAllStackTraces} is a method in the official JVM Tooling Interface (JVMTI) which is a programming interface utilized by development and monitoring tools. This method enables the profiler to extract the stack traces of all the threads currently executing on the JVM. \cite{jvmtm} Downside for this method is the fact that profilers utilizing this method are safepoint biased. For this reason, the performance is negatively affected due to frequent pauses for reaching safepoints.
 
 Due to safepoint induced performance problems, this method aquired significantly less samples when compared to profilers based on \texttt{Async\-Get\-Call\-Trace}. Additionally, profiling results might be biased due to the fact that the stack traces can only be obtained when the JVM has reached a safepoint.
 
-\texttt{GetAllStackTraces} is used in most commercial profilers such as JVisualVM, YourKit and JProfiler. \cite{visualvm} \cite{wakart_psychosomatic_2016}
+\texttt{GetAllStackTraces} is used in most commercial profilers such as JVisualVM, YourKit and JProfiler. \cite{wakart_psychosomatic_2016} \cite{visualvm} 
 
 
 \subsubsection{\texttt{AsyncGetCallTrace} profilers}
