@@ -15,7 +15,7 @@ It sets up a signal handler to handle \texttt{SIGPROF} signals sent to the Java 
 
 Upon receiving a signal, an \textit{arbitrary} thread currently executing on the CPU will handle the signal \cite{stevens_advanced_2013}. The signal handler proceeds to call \texttt{AsyncGetCallTrace} method from the JVMTI API to obtain the call trace of the current thread which is handling the signal. The obtained call trace is then persisted.
 
-It is worth mentioning that the thread handling the \texttt{SIGPROF} signal can be any thread of the Java process being profiled. Even the threads responsible for garbage collection and just-in-time compilation. In such cases, the samples are discarded as such samples do not provide informative results. Samples which contain the observable application's stack frames are considered useful and provide relevant information about the application's performance.
+It is worth mentioning that the thread handling the \texttt{SIGPROF} signal can be any thread of the Java process being profiled. Even the threads responsible for garbage collection and just-in-time compilation. In such cases, the samples are discarded as such samples do not provide informative results. Samples which contain the observed application's stack frames are considered useful and provide relevant information about the application's performance.
 
 %\supervisor{We currently hav a definition of useful sample in the future research section and we forward reference it from some point in next chapter. Maybe it would make sense to introduce this definitios somewhere here? Forward referencing to definition is not too nice and bringing in ``new'' definitions in future research does not seem ideal.}
 
@@ -42,6 +42,6 @@ void AsyncGetCallTrace(ASGCT_CallTrace *trace, jint depth, void* ucontext) {
 Testing shows that a single \texttt{AsyncGetCallTrace} method call takes 4.6 microseconds on average.
 
 \subsection{Implications of the performance analysis}
-Previously described limitations and \texttt{Async\-Get\-Call\-Trace} method performance measurements do not expose apparent problems or reasons on why \texttt{Async\-Get\-Call\-Trace} method can not be called more frequently during profiling. As the \texttt{Async\-Get\-Call\-Trace} method execution time is significantly smaller when compared to the default lowest achieveable sampling interval, the hypothesis is that that having smaller profiling interval will not affect the observable application's performance to a great extent. Thus, achieving higher sampling frequency is a goal worth pursuing.
+Previously described limitations and \texttt{Async\-Get\-Call\-Trace} method performance measurements do not expose apparent problems or reasons on why \texttt{Async\-Get\-Call\-Trace} method can not be called more frequently during profiling. As the \texttt{Async\-Get\-Call\-Trace} method execution time is significantly smaller when compared to the default lowest achieveable sampling interval, the hypothesis is that that having smaller profiling interval will not affect the observed application's performance to a great extent. Thus, achieving higher sampling frequency is a goal worth pursuing.
 
 \end{document}
