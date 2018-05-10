@@ -24,7 +24,7 @@ Current implementation of Honest Profiler makes use of the standard interval tim
 
 
 \subsection{\texttt{AsyncGetCallTrace} performance analysis}
-Prior to increasing the sampling frequency, it is important to understand to what are the performance limitations that calling the \texttt{Async\-Get\-Call\-Trace} would imply. It is necessary to understand how long does a call to the \texttt{Async\-Get\-Call\-Trace} method take  to ensure that increasing the sampling frequency will not cause excessive performance overhead to the application being profiled. In order to measure the execution time, a custom Java Virtual Machine build with CPU time based time measurement logic was added to the \texttt{Async\-Get\-Call\-Trace} method. The added timing functionality can be observed in Listing ~\ref{lst:asgct_time}.
+Prior to increasing the sampling frequency, it is important to understand to what are the performance limitations that calling the \texttt{Async\-Get\-Call\-Trace} would imply. It is necessary to understand how long does a call to the \texttt{Async\-Get\-Call\-Trace} method take  to ensure that increasing the sampling frequency will not cause excessive performance overhead to the application being profiled. In order to measure the execution time, a custom Java Virtual Machine build with CPU time based time measurement logic was added to the \texttt{Async\-Get\-Call\-Trace} method. The added timing functionality is presented in Listing ~\ref{lst:asgct_time}.
 
 \begin{lstlisting}[language=C++,style=def,label={lst:asgct_time}, caption={CPU time based measurement in \texttt{AsyncGetCallTrace} method}]
 void AsyncGetCallTrace(ASGCT_CallTrace *trace, jint depth, void* ucontext) {
