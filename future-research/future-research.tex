@@ -13,7 +13,6 @@ Additionally, during testing the solutions, an anomaly with large amount of unus
 	\item \texttt{SIGPROF} signal is sent to a thread which is exiting
 	\item \texttt{SIGPROF} signal is sent to a thread whose stack trace is not walkable
 \end{enumerate}
-\supervisor{As written previously, I would move this forward.}
 
 Future studies could investigate the signals emitted and investigate the distribution of threads which are handling the signal and block the threads from handling the profiling signal as they will not provide usable stack traces for profiling results.
 For example, patching the main thread loop in the Java Virtual Machine initialization using the construct shown in listing ~\ref{lst:sigmask} decreases the amount of unusable samples by a noticeable margin due to the fact that this thread can not handle the profiling signal sent by Honest Profiler. A promising idea would be to investigate the initialization of native threads within Java Virtual Machine and disable handling of the profiling signal using a similar construct as shown in listing \ref{lst:sigmask}.
