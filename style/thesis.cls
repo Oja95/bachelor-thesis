@@ -145,3 +145,6 @@
 \usepackage{enumitem}% http://ctan.org/pkg/enumitem
 
 \usepackage{subfigure}
+
+\usepackage[yyyymmdd]{datetime}
+\newdateformat{dotdate}{\twodigit{\THEDAY}.\twodigit{\THEMONTH}.\THEYEAR}
