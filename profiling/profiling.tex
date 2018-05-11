@@ -28,7 +28,8 @@ The samples of the visualization in Figure \ref{fig:samplingProf} were gathered 
 
 Although sampling profiling does not provide precise metrics for each method's execution time, it can provide a general overview to visualize the time spent in the profileable application's context. Such information is often sufficient to make actionable optimizations in the observed application.
 
-\subsection{Importance of samples' quantity}
+%\subsection{Importance of samples' quantity}
+\subsection{Sampling profiling challenges}
 
 For sampling profilers, the result is a statistical approximation of the program's performance. Thus, having more samples will provide a more accurate approximation. 
 
@@ -95,8 +96,9 @@ Increasing the sampling interval would improve the situation as demonstrated on 
 \label{fig:highSampleCount}
 \end{figure}
 
-\subsection{Sampling profiling challenges}
-There are multiple problems that the implementations of sampling profilers could experience. These problems could potentially affect the reliability of the samples provided by the sampling profiler.
+%\subsection{Sampling profiling challenges}
+%There are multiple problems that the implementations of sampling profilers could experience. These problems could potentially affect the reliability of the samples provided by the sampling profiler.
+Following subsections will provide examples of problematic scenarios in which the accuracy of a sampling profiler is negatively affected.
 
 % \supervisor{I would write out what you mean under results here, although not as important is in introduction as }
 \subsubsection{Periodicity bias}
