@@ -2,7 +2,7 @@
 \documentclass[..thesis.tex]{subfiles}
 
 \begin{document}
-Sampling profilers are a type of profiles which gather call traces from the observed program at varying intervals. A sample in the form of a call trace is a representation of a single thread's state at a particular moment in time. A simple call trace of a thread is presented in Listing ~\ref{lst:stack_trace}. 
+Sampling profilers are a type of profilers which gather call traces from the observed program at varying intervals. A sample in the form of a call trace is a representation of a single thread's state at a particular moment in time. A simple call trace of a thread is presented in Listing ~\ref{lst:stack_trace}. 
 
 \begin{lstlisting}[style=def,label={lst:stack_trace}, caption={Call trace of a thread}]
 "main" #1 prio=5 os_prio=0 tid=0x00007feccc224000 nid=0x1f2c 
@@ -13,6 +13,7 @@ runnable [0x00007fecd5660000]
 	    at ee.ut.SimpleBenchmark.main(SimpleBenchmark.java:11)
 \end{lstlisting}
 
+\TODO{* Jällegi lausete täpsus, mis tähendab "gathered samples can be aggregated based on their occurrence" ja "distribution of the gathered samples". Võimalik, et peaks lihtsalt otse flamegraphi mõiste väga lihtsalt lahti seletada nende üldiste lausete asemel.}
 Gathered samples can then be aggregated and grouped based on their occurrence.
 Distribution of the gathered samples highlights the hotspots in the program under observation. Higher frequency of a call trace suggests that more program's execution time was spent in that particular state. 
 
@@ -216,7 +217,7 @@ Due to safepoint induced performance problems, this method aquired significantly
 
 These kind of profilers make use of an undocumented JVM method \texttt{Async\-Get\-Call\-Trace} which enables obtaining call traces from a thread without the safepoint bias \cite{agct_source}. The asynchronous nature of this method enables the profiler to safely call this method in a signal handler which is the key architectural element for these kind of profilers \cite{signal-safety7}.
 
-Due to safepoint bias free sample obtaining method, profiling samples tend to be more accurate since the JVM does not have to stop on a safepoint in order to obtain the call trace of the running thread. This method is a part of the JVMTI API.
+Due to safepoint bias free sample obtaining method, profiling samples tend to be more accurate since the JVM does not have to stop on a safepoint in order to obtain the call trace of the running thread. 
 
 Notable examples of such profilers which utilize \texttt{Async\-Get\-Call\-Trace} method  are Honest Profiler and Java Mission Control. 
 
