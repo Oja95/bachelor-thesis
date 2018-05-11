@@ -222,7 +222,7 @@ Notable examples of such profilers which utilize \texttt{Async\-Get\-Call\-Trace
 
 \subsubsection{Native profilers}
 %\supervisor{Connect the two sentences more strongy, like ``The main downside being'' or somethnig.}
-Native profilers are tools utilizing the low level abstractions of the operating system to  profile the native binaries for the operating system. These profilers are superior to the previously described methods performance wise but do fall short on the usefulness of the gathered information. The main downside of native profilers is the inability obtain sufficient information about the Java level stack frames executed inside the Java Virtual Machine. Unlike other sampling techiniques introduced, native profilers are not much use to profile applications running on the Java Virtual Machine where most of the code has not been optimized yet.
+Native profilers are tools utilizing the low level abstractions of the operating system to  profile the native binaries for the operating system. These profilers are superior to the previously described methods performance wise but do fall short on the usefulness of the gathered information. The main downside of native profilers is the inability obtain sufficient information about the Java level stack frames interpreted within the Java Virtual Machine. Unlike other sampling techiniques introduced, native profilers are not much use to profile applications running on the Java Virtual Machine where most of the code has not been compiled into native machine code by JIT compilation yet.
 
 %\TODO{Add example of native call trace to show that it is kind of useless} \supervisor{To be fair, one would have to give a sample such as one used with perf-map-agent}
 
