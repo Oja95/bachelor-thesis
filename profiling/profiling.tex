@@ -24,7 +24,7 @@ Figure \ref{fig:samplingProf} helps to visualize the performance implications of
 \label{fig:samplingProf}
 \end{figure}
 
-The samples of the visualization in Figure \ref{fig:samplingProf} were gathered from a simple program that executed two identical methods, \texttt{methodA} and \texttt{methodB}, alternately. During its execution $481$ usable samples were collected. $198$ of those samples contained \texttt{methodA} in its top call frame and $194$ contained \texttt{methodB} in its top frame.
+The samples of the visualization in Figure \ref{fig:samplingProf} were gathered from a simple program that executed two identical methods, \texttt{methodA} and \texttt{methodB}, alternately in a loop. During its execution $481$ usable samples were collected. $198$ of those samples contained \texttt{methodA} in its top call frame and $194$ contained \texttt{methodB} in its top frame. Samples with \texttt{ee.ut.SimpleBenchmark.main} in its top stack frame may have been obtained during benchmark initialization or executing the loop's control flow instructions.
 
 Although sampling profiling does not provide precise metrics for each method's execution time, it can provide a general overview to visualize the time spent in the profileable application's context. Such information is often sufficient to make actionable optimizations in the observed application.
 
