@@ -194,7 +194,7 @@ Using tracing profilers usually requires the user or the profiler to know the ap
 
 Downside of tracing profiling is its performance and its susceptibility to observer effect. Tracing profilers rely on bytecode instrumentation which directly affects the way how the Java Virtual Machine performs its optimizations. Some optimizations might not be possible due to the added bytecode instructions added by the tracing profiler. Additionally, depending on the level of information detail and the amount of instrumentation performed, requiring higher information granularity could potentially introduce impactful overhead to the application's performance which could result in inaccurate profiling results. 
 
-When comparing sampling profiling to tracing profiling, it excels with its performance. Sampling profilers can potentially obtain thousands of samples each second with negligible performance overhead.
+When comparing sampling profiling to tracing profiling, it excels with its performance. Sampling profilers can potentially obtain thousands of samples each second with negligible performance overhead. Additionally, sampling profilers do not require intrumentation of the observed application for obtaining its samples but rather uses the utilities of the JVM to do so.
 
 \subsection{Sampling profiling possible implementations for the JVM}
 
