@@ -23,25 +23,4 @@ It is worth mentioning that the thread handling the \texttt{SIGPROF} signal can 
 Current implementation of Honest Profiler makes use of the standard interval timer from GNU time library and UNIX operating system signals to periodically call the \texttt{AsyncGetCallTrace} method. This implies that the lowest possible \texttt{Async\-Get\-Call\-Trace} method call interval is the time between two ticks of the system timer interrupt (\textit{jiffy}). This duration depends on the clock interrupt frequency of the hardware platform being used. Default clock frequency for Linux based operating systems (since kernel version 2.6.13) is 250 Hz which results in $\frac{1}{250} = 0.004$ seconds for the duration of a jiffy \cite{linux_time}. In such configuration, minimum sampling interval would be 4 milliseconds.
 
 
-\subsection{\texttt{AsyncGetCallTrace} performance analysis}
-Prior to increasing the sampling frequency, it is important to understand to what are the performance limitations that calling the \texttt{Async\-Get\-Call\-Trace} would imply. It is necessary to understand how long does a call to the \texttt{Async\-Get\-Call\-Trace} method take  to ensure that increasing the sampling frequency will not cause excessive performance overhead to the application being profiled. In order to measure the execution time, a custom Java Virtual Machine build with CPU time based time measurement logic was added to the \texttt{Async\-Get\-Call\-Trace} method. The added timing functionality is presented in Listing ~\ref{lst:asgct_time}.
-
-\begin{lstlisting}[language=C++,style=def,label={lst:asgct_time}, caption={CPU time based measurement in \texttt{AsyncGetCallTrace} method}]
-void AsyncGetCallTrace(ASGCT_CallTrace *trace, jint depth, void* ucontext) {
-    struct timespec start, stop;
-    clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);
-
-    // AsyncGetCallTrace method code
-    
-    clock_gettime(CLOCK_THREAD_CPUTIME_ID, &stop);
-    long accum = stop.tv_nsec - start.tv_nsec;
-    printf("%li", accum);
-}
-\end{lstlisting}
-
-Testing shows that a single \texttt{AsyncGetCallTrace} method call takes 4.6 microseconds on average.
-
-\subsection{Implications of the performance analysis}
-Previously described limitations and \texttt{Async\-Get\-Call\-Trace} method performance measurements do not expose apparent problems or reasons on why \texttt{Async\-Get\-Call\-Trace} method can not be called more frequently during profiling. As the \texttt{Async\-Get\-Call\-Trace} method execution time is significantly smaller when compared to the default lowest achieveable sampling interval, the hypothesis is that that having smaller profiling interval will not affect the observed application's performance to a great extent. Thus, achieving higher sampling frequency is a goal worth pursuing.
-
 \end{document}
