@@ -51,7 +51,7 @@ Figure \ref{fig:lowSampleCount} illustrates the problem which is caused by the l
 
 % samples
 \draw[dashed, thick] (2.9,3.5) -- (2.9,-0.3);
-\draw[dashed, thick] (7.7,3.5) -- (7.7,-0.3);
+\draw[red, dashed, line width=0.5mm] (7.7,3.5) -- (7.7,-0.3);
 \draw[dashed, thick] (12.5,3.5) -- (12.5,-0.3);
 
 \end{tikzpicture}
@@ -59,7 +59,7 @@ Figure \ref{fig:lowSampleCount} illustrates the problem which is caused by the l
 \label{fig:lowSampleCount}
 \end{figure}
 
-Increasing the sampling interval would improve the situation as demonstrated on Figure \ref{fig:highSampleCount} on page \pageref{fig:highSampleCount}. Upon profiling with a four times higher sampling interval, it becomes apparent that method Y call trace samples have been proportionally represented in the total call trace samples. The call trace samples containing the method Y in its top frame are colored red on the Figure \ref{fig:highSampleCount}.
+Increasing the sampling interval would improve the situation as demonstrated on Figure \ref{fig:highSampleCount} on page \pageref{fig:highSampleCount}. Upon profiling with a four times higher sampling interval, it becomes apparent that method Y call trace samples have been proportionally represented in the total call trace samples. The call trace samples containing the method Y in its top frame are colored red.
 
 \begin{figure}[H]
 \centering
