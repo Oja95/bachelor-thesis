@@ -15,15 +15,15 @@ Additionally, during testing the solutions, an anomaly with large amount of unus
 \end{enumerate}
 
 Future studies could investigate the signals emitted and investigate the distribution of threads which are handling the signal and block the threads from handling the profiling signal as they will not provide usable stack traces for profiling results.
-For example, patching the main thread loop in the Java Virtual Machine initialization using the construct shown in Listing ~\ref{lst:sigmask} decreases the amount of unusable samples by a noticeable margin due to the fact that this thread can not handle the profiling signal sent by Honest Profiler. A promising idea would be to investigate the initialization of native threads within Java Virtual Machine and disable handling of the profiling signal using a similar construct as shown in Listing \ref{lst:sigmask}.
+For example, patching the main thread loop in the Java Virtual Machine initialization decreases the amount of unusable samples by a noticeable margin due to the fact that this thread can not handle the profiling signal sent by Honest Profiler. A promising idea would be to investigate the initialization of native threads within Java Virtual Machine and disable handling of the profiling signal.
 
-\begin{lstlisting}[language=C++,style=def,label={lst:sigmask}, caption={Blocking the \texttt{SIGPROF} signal for a thread}]
-sigset_t mask;
-sigemptyset(&mask);
-sigaddset(&mask, SIGPROF);
-pthread_sigmask(SIG_BLOCK, &mask, NULL)
-\end{lstlisting}
+%\begin{lstlisting}[language=C++,style=def,label={lst:sigmask}, caption={Blocking the \texttt{SIGPROF} signal for a thread}]
+%sigset_t mask;
+%sigemptyset(&mask);
+%sigaddset(&mask, SIGPROF);
+%pthread_sigmask(SIG_BLOCK, &mask, NULL)
+%\end{lstlisting}
 
-\supervisor{This is also very hard to read without context.}
+%\supervisor{This is also very hard to read without context.}
 
 \end{document}
