@@ -22,5 +22,10 @@ It is worth mentioning that the thread handling the \texttt{SIGPROF} signal can 
 \subsection{Current limitations}
 Current implementation of Honest Profiler makes use of the standard interval timer from GNU time library and UNIX operating system signals to periodically call the \texttt{AsyncGetCallTrace} method. This implies that the lowest possible \texttt{Async\-Get\-Call\-Trace} method call interval is the time between two ticks of the system timer interrupt (\textit{jiffy}). This duration depends on the clock interrupt frequency of the hardware platform being used. Default clock frequency for Linux based operating systems (since kernel version 2.6.13) is 250 Hz which results in $\frac{1}{250} = 0.004$ seconds for the duration of a jiffy \cite{linux_time}. In such configuration, minimum sampling interval would be 4 milliseconds.
 
+Therefore, increasing the sampling ratio will require significant changes in the architecture of how timer signals are sent to the profiler. As we shall see, different architectures not only perform differently in terms of overhead but also in terms of which thread ends up receiving timer signals. Hence, the ratio of usable stack traces versus those that have to be discarded are different for each implementation.
+
+%* VÄGA OLULINE. Sektsioon 3.2 ei teinud minu jaoks piisavalt selge, et sampl'ing rate suurendamine keeruline. Ma ei oska öelda, miks see selge ei olnud, sest täpselt seda see ju seal ütlebki. Võib-olla on oleks hea lisada just seal siis üks lõik ja kirjeldada, mis siis tegema hakkad ja natuke juba ette öelda, mis probleemid võivad tulla. Ühesõnaga, 3.2 lõigu otsa, siis öelda, et ""
+
+
 
 \end{document}
