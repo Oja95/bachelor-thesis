@@ -162,7 +162,7 @@ Firstly, a profiler does introduce some performance overhead due to its nature. 
 
 %  \supervisor{This is undefined definition at this point. Maybe try to give a simple defitiniot beforehand? something ``in contrast to sampling profiler'' Or try to move some of the definition in next paragraph earlier?} 
 
-\TODO{Check phrasing of the following paragraph with supervisors}
+%\TODO{Check phrasing of the following paragraph with supervisors}
 The presence of a profiler could also change the way how the Java Virtual Machine does its optimizations. Java Virtual Machine makes use of just-in-time (JIT) compilation techniques during at run time. JVM identifies methods which meet some criterias (e.g. called frequently) and compiles these methods into native machine code, resulting in an highly optimized code which improves the performance of such methods \cite{understanding_jit}. Various information extracting functions might change the way how the bytecode on the Java Virtual Machine is executed \cite{mytkowicz_evaluating_2010}. The presence of a profiler could alter which methods are eligible for JIT compilation. Thus, resulting in a different performance profile when compared to an application's execution in which the profiler is not attached.
 
 %This factor affects sampling profilers as well but it is especially relevant for tracing profilers 
