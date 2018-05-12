@@ -6,10 +6,10 @@
 This sections describes three different approaches for increasing the sampling frequency for Honest Profiler. To verify the performance overhead of the solution and its accuracy, a benchmark test was executed on each solution.
 
 \subsection{Benchmark}
-Benchmark test reads 10000000 random integers from an input file and then performs quicksort on the copy of the obtained list of integer 10 times. Benchmark test code is included in Appendix \ref{B:benchmark-test-code}. 
+Benchmark test reads 10000000 random integers from an input file and then performs quicksort on the copy of the obtained list of integer 10 times. For each solution, the benchmark is executed 10 times. Benchmark test code is included in Appendix \ref{B:benchmark-test-code}. 
 
 %\supervisor{frames of interest -- we should reference to definition we have given here imho. Forward reference to future research would be possible, but I would prefer to reference backwards.}
-Baseline of the test using the default implementation of the Honest Profiler finished the test in 74.72 seconds on average. During profiling, 19025 samples were obtained on average from which 15130 (81\%) contained useful and informative frames. Profiling results are visualized on the Figure ~\ref{fig:baseline} on page ~\pageref{fig:baseline}. 
+Baseline of the test using the default implementation of the Honest Profiler finished the test in 59.83 seconds on average. During profiling, 19025 samples were obtained on average from which 15130 (81\%) contained useful and informative frames. Profiling results are visualized on the Figure ~\ref{fig:baseline} on page ~\pageref{fig:baseline}. 
 
 \begin{figure}[h]
 \includegraphics[scale=0.335]{baseline.png}
@@ -27,7 +27,7 @@ Using real time based timer means that its interval is not limited by the system
 
 Although this approach obtains considerably larger amount of samples due to higher profiling frequency, it also introduces a potential bias that could affect the profiling results. It might be possible that between the two consecutive timer expiration signals, the application under observation has not received any processor time to perform its instructions. This would imply that the same sample in the exact same state is persisted multiple times. Similar issue occurs the other way around when the application's instructions are executed on multiple processor cores. There is a clear distinction in cases in which 4 processor cores are fully utilized executing the application's instructions and cases in which a single processor core is used. The former scenario would get roughly four times as much work done when compared to the latter scenario. However, the real time based timer will not take these workload differences into account because it measures time based on the real world clock.
 
-Average benchmark's execution time using this method finished in 82.36 seconds and obtained up to 12.8 million samples during its execution from which only 73982 (0.58\%) contained frames of interest. Whereas the 10\% increase in execution times is acceptable for gaining significantly larger amount of samples, it is unknown why only 0.58\% of the gathered samples contained frames of interest. This phenomenom is also further covered in the future research Section ~\ref{sec:future-research}. Visualization of the profiling results utilizing this method is presented in Figure ~\ref{fig:walltime}.
+Average benchmark's execution time using this method finished in 70.78 seconds and obtained up to 12.8 million samples during its execution from which only 73982 (0.58\%) contained frames of interest. Whereas the 15\% increase in execution times is acceptable for gaining significantly larger amount of samples, it is unknown why only 0.58\% of the gathered samples contained frames of interest. This phenomenom is also further covered in the future research Section ~\ref{sec:future-research}. Visualization of the profiling results utilizing this method is presented in Figure ~\ref{fig:walltime}.
 \begin{figure}[H]
 \includegraphics[scale=0.27]{walltime.png}
 \caption{Visualization of real time based solution profiling results}
@@ -42,7 +42,7 @@ This can be accomplished by creating a custom configuration in the \texttt{Kconf
 
 Using the 1000 Hz kernel increases the sampling frequency as the CPU time based interval timer from GNU time library can now send an interrupt signal every $\frac{1}{1000} = 0.001$ seconds. Experiments with such kernel has shown four times increase in the amount of samples gathered wihtout causing significant performance overhead to the application under observation.
 
-Benchmark runs on such configuration had average execution time of 77.33 seconds during which 70525 samples were collected. 50937 of the samples (72\%) consisted of meaningful samples. When comparing to the baseline bechmark results, this solution resulted in 336\% increase in useful samples with negligible performance overhead. Visualization from the benchmark's execution using such profiling configuration is shown on Figure ~\ref{fig:hz_increase}.
+Benchmark runs on such configuration had average execution time of 61.82 seconds during which 70525 samples were collected. 50937 of the samples (72\%) consisted of meaningful samples. When comparing to the baseline bechmark results, this solution resulted in 336\% increase in useful samples with negligible performance overhead. Visualization from the benchmark's execution using such profiling configuration is shown on Figure ~\ref{fig:hz_increase}.
 \begin{figure}[H]
 \includegraphics[scale=0.375]{hz_increase.png}
 \caption{Visualization of the results from profiling with increased kernel timer frequency}
@@ -94,7 +94,7 @@ Figure \ref{fig:shared_mem_arctitecture} on page \pageref{fig:shared_mem_arctite
 
 %This can be credited to the fact that time measurement logic has been extracted from the Honest Profiler's logic which means that the Java process will have to execute fewer amount of instructions.
 
-Testing shows that such modification for Honest Profiler runs the benchmark test in 72.64 seconds on average which is better than the baseline benchmark execution time.  From running the benchmark test, a sample was obtained roughly after every 100 microseconds. 746868 samples were obtained during profiling and 38775 (5.2\%) of them were useful. This approach obtained 256\% more useful samples than the baseline benchmark.
+Testing shows that such modification for Honest Profiler runs the benchmark test in 63.85 seconds on average.  From running the benchmark test, a sample was obtained roughly after every 100 microseconds. 746868 samples were obtained during profiling and 38775 (5.2\%) of them were useful. This approach obtained 256\% more useful samples than the baseline benchmark.
 
 Visualization of the profiling results from the benchmark run using this solution is presented in Figure \ref{fig:shared-mem-results} on page \pageref{fig:shared-mem-results}.
 \begin{figure}[H]
