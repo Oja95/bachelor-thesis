@@ -13,9 +13,11 @@ runnable [0x00007fecd5660000]
 	    at ee.ut.SimpleBenchmark.main(SimpleBenchmark.java:11)
 \end{lstlisting}
 
-\TODO{* Jällegi lausete täpsus, mis tähendab "gathered samples can be aggregated based on their occurrence" ja "distribution of the gathered samples". Võimalik, et peaks lihtsalt otse flamegraphi mõiste väga lihtsalt lahti seletada nende üldiste lausete asemel.}
-Gathered samples can then be aggregated and grouped based on their occurrence.
-Distribution of the gathered samples highlights the hotspots in the program under observation. Higher frequency of a call trace suggests that more program's execution time was spent in that particular state. 
+%\TODO{* Jällegi lausete täpsus, mis tähendab "gathered samples can be aggregated based on their occurrence" ja "distribution of the gathered samples". Võimalik, et peaks lihtsalt otse flamegraphi mõiste väga lihtsalt lahti seletada nende üldiste lausete asemel.}
+
+%Gathered samples can then be aggregated and grouped based on their occurrence.
+Gathered samples must then be processed in order to gain relevant information about the application's performance. Identical call trace samples can be collapsed into a single entity which shows how many samples represent a particular application's state.
+Distribution of the amount of identical samples highlights the hotspots in the program under observation. Higher occurrence of a sample suggests that more program's execution time was spent in that particular state. 
 
 Figure \ref{fig:samplingProf} helps to visualize the performance implications of the frequency of the gathered samples. The visualization was created by a tool called Flamegraphs which provides means to generate a comprehensive and intuitive visualization of the gathered call trace samples \cite{gregg_flame}. Visualization tools are necessary to produce meaningful representations of the collected data as unprocessed call trace samples \textit{per se} are not informative without the context of other samples' frequency.
 
