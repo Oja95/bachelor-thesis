@@ -17,9 +17,10 @@ runnable [0x00007fecd5660000]
 
 %Gathered samples can then be aggregated and grouped based on their occurrence.
 Gathered samples must then be processed in order to gain relevant information about the application's performance. Identical call trace samples can be collapsed into a single entity which shows how many samples represent a particular application's state.
+%\TODO{Following sentence is rather ambiguous, is it needed or can be explained better. Vootele pls help}
 Distribution of the amount of identical samples highlights the hotspots in the program under observation. Higher occurrence of a sample suggests that more program's execution time was spent in that particular state. 
 
-Figure \ref{fig:samplingProf} helps to visualize the performance implications of the frequency of the gathered samples. The visualization was created by a tool called Flamegraphs which provides means to generate a comprehensive and intuitive visualization of the gathered call trace samples \cite{gregg_flame}. Visualization tools are necessary to produce meaningful representations of the collected data as unprocessed call trace samples \textit{per se} are not informative without the context of other samples' frequency.
+Figure \ref{fig:samplingProf} visualizes the distribution of the gathered samples. This shows a general overview of the application's performance. The visualization was created by a tool called Flamegraphs which provides means to generate a comprehensive and intuitive visualization of the gathered call trace samples \cite{gregg_flame}. Visualization tools are necessary to produce meaningful representations of the collected data as unprocessed call trace samples \textit{per se} are not informative without the context of other samples' frequency.
 
 \begin{figure}[H]
 \includegraphics[scale=0.4]{equalsample.png}
@@ -27,9 +28,9 @@ Figure \ref{fig:samplingProf} helps to visualize the performance implications of
 \label{fig:samplingProf}
 \end{figure}
 
-The samples of the visualization in Figure \ref{fig:samplingProf} were gathered from a simple program that executed two identical methods, \texttt{methodA} and \texttt{methodB}, alternately in a loop. During its execution $481$ usable samples were collected. $198$ of those samples contained \texttt{methodA} in its top call frame and $194$ contained \texttt{methodB} in its top frame. Samples with \texttt{ee.ut.SimpleBenchmark.main} in its top stack frame may have been obtained during benchmark initialization or executing the loop's control flow instructions.
+The samples for the visualization in Figure \ref{fig:samplingProf} were gathered from a simple program that executed two identical methods, \texttt{methodA} and \texttt{methodB}, alternately in a loop. During its execution $481$ usable samples were collected. $198$ of those samples contained \texttt{methodA} in its top call frame and $194$ contained \texttt{methodB} in its top frame. Samples with \texttt{ee.ut.SimpleBenchmark.main} in its top stack frame may have been obtained during benchmark initialization or executing the loop's control flow instructions.
 
-Although sampling profiling does not provide precise metrics for each method's execution time, it can provide a general overview to visualize the time spent in the profileable application's context. Such information is often sufficient to make actionable optimizations in the observed application.
+Although sampling profiling does not provide precise metrics for each method's execution time, it can provide a general overview of the time spent in the profileable application's context. Such information is often sufficient to make actionable optimizations in the observed application.
 
 %\subsection{Importance of samples' quantity}
 \subsection{Sampling profiling challenges}
@@ -105,7 +106,8 @@ Following subsections will provide examples of problematic scenarios in which th
 
 % \supervisor{I would write out what you mean under results here, although not as important is in introduction as }
 \subsubsection{Periodicity bias}
-This problem occurs when the sampling interval catches on to some program's routine which executions match the sampling interval. Figure \ref{fig:periodicityBias} illustrates the issue behing the bias. Suppose that the program to be observed runs \texttt{Method X} and \texttt{Method Y} alternatingly for some constant time period. If the dotted lines are the marks for the call trace samples taken during profiling, the results would be skewed as not a single sample represents \texttt{Method Y} in the results. 
+This problem occurs when the sampling interval catches on to some program's routine which executions match the sampling interval. 
+Figure \ref{fig:periodicityBias} illustrates the issue behind the bias. Suppose that the program to be observed runs methods X and Y alternately for some constant time period. If the dotted lines are the marks for the call trace samples taken during profiling, the results would be skewed as not a single sample represents method Y in the results. 
 
 \begin{figure}[H]
 \centering
@@ -137,10 +139,10 @@ Possible way to tackle this problem would be to randomize the sampling interval 
 \subsubsection{Safepoint bias}
 Sampling profiling assumes that the obtained samples are acquired uniformly and randomly as bias in the samples could potentially yield inaccurate results. In light of this, when gathering samples from a program running on the Java Virtual Machine, one must take \textit{safepoints} into consideration.
 
-Safepoints in the Java Virtual Machine are defined as points during the program's execution during which all of the threads are in a consistent and well known state. Safepoints are necessary for various Java Virtual Machine's operations such as the garbage collection, method deoptimization and class redefinition \cite{hotspot_glossary}. It has been shown that most of the existing Java profilers require the Java Virtual Machine to be stopped on a safepoint in order to obtain the call trace sample from the profileable thread \cite{wakart_psychosomatic_2016}. However, this mechanism also casts a shadow on the profling results as this implies that the samples are not acquired randomly but rather require the Java Virtual Machine to be in a specific state \cite{mytkowicz_evaluating_2010}. 
+Safepoints in the Java Virtual Machine are defined as points during the program's execution during which all of the threads are in a consistent and well known state. Safepoints are necessary for various Java Virtual Machine's operations such as the garbage collection, method deoptimization and class redefinition \cite{hotspot_glossary}. It has been shown that many of the existing sampling Java profilers require the Java Virtual Machine to be stopped on a safepoint in order to obtain the call trace sample from the profileable thread \cite{wakart_psychosomatic_2016}. However, this mechanism also casts a shadow on the profling results as this implies that the samples are not acquired randomly but rather require the Java Virtual Machine to be in a specific state \cite{mytkowicz_evaluating_2010}. 
 
 The execution of the code sample in Listing ~\ref{lst:safepoint} illustrates this issue well. The nested loop in this example is to avoid Java compiler specific optimizations.
-
+\TODO{Last sentence is way too general and sounds like I have no idea what im doing}
 \begin{lstlisting}[language=java,style=def,label={lst:safepoint}, caption={Counted loops do not contain safepoints}]
 int k = 0;
 for (int i = 0; i < Integer.MAX_VALUE; i++) {
@@ -152,21 +154,26 @@ for (int i = 0; i < Integer.MAX_VALUE; i++) {
 \end{lstlisting}
 As various Java Virtual Machine routines are nondeterministic, it is impossible to predict when does the Java Virtual Machine signal its threads to be stopped on a safepoint. However, if such request should occur in the middle of the counted loop's execution in Listing \ref{lst:safepoint}, the thread executing the loop's instructions will not stop until the loop has finished. Thus, if an ordinary sampling profiler signals the thread for a call trace sample, it is delayed until the thread executing the loop's instructions finishes its task \cite{wakart_psychosomatic_2015}. 
 
-To measure the actual time that is spent waiting for the Java Virtual Machine to stop all its threads on a safepoint, \texttt{-XX:+PrintGCApplicationStoppedTime} flag can be used. Appending this flag to the Java Virtual Machine arguments, it enables outputing the time it takes for the Java Virtual Machine to stop all threads in order to execute a subroutine and the time that this operation took in total. Due to nondeterminicity, the sample code in Listing \ref{lst:safepoint} was executed $100$ times. The worst case among $100$ program executions recorded a Java Virtual Machine operation that took $7.517$ seconds and $99.999\%$ of that time was spent on reaching a safepoint. It is worth mentioning that this operation took $65\%$ of the whole program's execution time.
+To measure the actual time that is spent waiting for the Java Virtual Machine to stop all its threads on a safepoint, \texttt{-XX:+PrintGCApplicationStoppedTime} flag can be used. Appending this flag to the Java Virtual Machine arguments enables outputing the time it takes to stop all threads in order to execute a subroutine (e.g. garbage collection) and the time that this operation took in total. Due to nondeterminicity, the sample code in Listing \ref{lst:safepoint} on page \pageref{lst:safepoint} was executed $100$ times. The worst case among $100$ program executions recorded a Java Virtual Machine operation that took $7.517$ seconds and $99.999\%$ of that time was spent on reaching a safepoint. It is worth mentioning that this operation took $65\%$ of the whole program's execution time.
 
+Previously described example in Listing \ref{lst:safepoint} on page \pageref{lst:safepoint} is also relevant for sampling profilers. If a safepoint biased profiler wishes to obtain a sample during the loop's execution, the sample aquisition is delayed until the loop has finished and the JVM has reached a safepoint. Such bias during obtaining the call trace clearly contradicts the randomness prerequisite for sampling profiling as samples can be only obtained if the profiler is in a specific state. 
+
+%\TODO{seletada, kuidas see profileerimise osas relevant on}
 % \supervisor{of this scale -- I doubt that the bias is rare, just that it usually is small}
-Although the provided example is rather artificial and such occurrences in real life programs are rare on such large scale, it clearly points out the bias that the safepoints potentially introduce. Such bias during obtaining the call trace clearly contradicts the randomness prerequisite for sampling profiling. Despite the presence of safepoint bias, such profiler can still produce actionable profiling results but lessen the accuracy when high detail granularity of the results is important.
+%\TODO{wat scale? rep-rhease}
+
+It is worth mentioning that the provided example is rather artificial and such occurrences in real life programs are rare on such large scale. Despite the presence of safepoint bias, such profilers can still produce actionable profiling results but lessen the accuracy when high detail granularity of the results is important.
 
 \subsubsection{Observer effect}
 
-Attaching a profiler to an application does alter the way how the application would normally execute. The \textit{observer effect} describes how a presence of a profiler can change the profiling outcome.
+Attaching a profiler to an application alters the way how the application would normally execute. The \textit{observer effect} describes how a presence of a profiler can change the profiling outcome.
  
-Firstly, a profiler does introduce some performance overhead due to its nature. Profilers do need to execute additional instructions for gathering information from the application under observation. To have meaningful profiling results, this overhead must not affect the application's performance by a large margin.
+Firstly, a profiler does introduce some performance overhead due to its nature. Profilers need to execute additional instructions for gathering information from the application under observation. To have meaningful profiling results, this overhead must not affect the application's performance by a large margin.
 
 %  \supervisor{This is undefined definition at this point. Maybe try to give a simple defitiniot beforehand? something ``in contrast to sampling profiler'' Or try to move some of the definition in next paragraph earlier?} 
 
 %\TODO{Check phrasing of the following paragraph with supervisors}
-The presence of a profiler could also change the way how the Java Virtual Machine does its optimizations. Java Virtual Machine makes use of just-in-time (JIT) compilation techniques during at run time. JVM identifies methods which meet some criterias (e.g. called frequently) and compiles these methods into native machine code, resulting in an highly optimized code which improves the performance of such methods \cite{understanding_jit}. Various information extracting functions might change the way how the bytecode on the Java Virtual Machine is executed \cite{mytkowicz_evaluating_2010}. The presence of a profiler could alter which methods are eligible for JIT compilation. Thus, resulting in a different performance profile when compared to an application's execution in which the profiler is not attached.
+The presence of a profiler could also change the way how the Java Virtual Machine does its optimizations. Java Virtual Machine makes use of just-in-time (JIT) compilation techniques at run time. JVM identifies methods which meet some criterias (e.g. called frequently) and compiles these methods into native machine code, resulting in an highly optimized code which improves the performance of such methods \cite{understanding_jit}. Various information extracting functions might change the way how the bytecode on the Java Virtual Machine is executed \cite{mytkowicz_evaluating_2010}. The presence of a profiler could alter which methods are eligible for JIT compilation. Thus, resulting in a different performance profile when compared to an application's execution in which the profiler is not attached.
 
 %This factor affects sampling profilers as well but it is especially relevant for tracing profilers 
 
@@ -207,17 +214,16 @@ When comparing sampling profiling to tracing profiling, it excels with its perfo
 \texttt{jstack} is an utility included in the Oracle's JDK and OpenJDK by default. This utility can be used to print out stack traces of all threads of a Java process \cite{jstack}. The simplest implementation to show the concept of a sampling profiler would be to periodically call the \texttt{jstack} utility to obtain the snapshot of all threads. These snapshots can be persisted and processed to produce a visualization of the application's performance. This approach has a relatively high overhead when compared to other sampling profiling methods and is not a viable method for profiling real world applications but rather illustrates the concept of sampling profiling.
 
 \subsubsection{\texttt{GetAllStackTraces} profilers}
-\texttt{GetAllStackTraces} is a method in the official JVM Tooling Interface (JVMTI) which is a programming interface utilized by development and monitoring tools. This method enables the profiler to extract the stack traces of all the threads currently executing on the JVM \cite{jvmtm}. Downside for this method is the fact that profilers utilizing this method are safepoint biased. For this reason, the performance is negatively affected due to frequent pauses for reaching safepoints.
-
-Due to safepoint induced performance problems, this method aquired significantly less samples when compared to profilers based on \texttt{Async\-Get\-Call\-Trace}. Additionally, profiling results might be biased due to the fact that the stack traces can only be obtained when the JVM has reached a safepoint.
-
-\texttt{GetAllStackTraces} is used in most commercial profilers such as JVisualVM, YourKit and JProfiler \cite{wakart_psychosomatic_2016, visualvm}.  
+\texttt{GetAllStackTraces} is a method in the official JVM Tooling Interface (JVMTI) which is a programming interface utilized by development and monitoring tools. This method enables the profiler to extract the stack traces of all the threads currently executing on the JVM \cite{jvmtm}. Downside of this method is the fact that profilers utilizing this method are safepoint biased since calling this method requires the JVM to have reached a safepoint. For this reason, the performance is negatively affected due to frequent pauses for reaching safepoints.
+Due to safepoint induced performance problems, this method produces significantly less samples when compared to profilers based on \texttt{Async\-Get\-Call\-Trace} as described in Section \ref{sec:asgct}. 
+\texttt{GetAllStackTraces} method is used in most commercial profilers such as JVisualVM, YourKit and JProfiler \cite{wakart_psychosomatic_2016, visualvm}.  
 
 
 \subsubsection{\texttt{AsyncGetCallTrace} profilers}
+\label{sec:asgct}
 %\supervisor{Maybe a bit how it enables obtaining such a call trace, and that it is meant to be called from signal handlers (and hence he Asynch part)?}
 
-These kind of profilers make use of an undocumented JVM method \texttt{Async\-Get\-Call\-Trace} which enables obtaining call traces from a thread without the safepoint bias \cite{agct_source}. The asynchronous nature of this method enables the profiler to safely call this method in a signal handler which is the key architectural element for these kind of profilers \cite{signal-safety7}.
+These kind of profilers make use of an undocumented JVMTI method \texttt{Async\-Get\-Call\-Trace} which enables obtaining call traces from a thread without the safepoint bias \cite{agct_source}. The asynchronous nature of this method enables the profiler to safely call this method in a signal handler which is the key architectural element for these kind of profilers \cite{signal-safety7}.
 
 Due to safepoint bias free sample obtaining method, profiling samples tend to be more accurate since the JVM does not have to stop on a safepoint in order to obtain the call trace of the running thread. 
 
@@ -225,7 +231,7 @@ Notable examples of such profilers which utilize \texttt{Async\-Get\-Call\-Trace
 
 \subsubsection{Native profilers}
 %\supervisor{Connect the two sentences more strongy, like ``The main downside being'' or somethnig.}
-Native profilers are tools utilizing the low level abstractions of the operating system to  profile the native binaries for the operating system. These profilers are superior to the previously described methods performance wise but do fall short on the usefulness of the gathered information. The main downside of native profilers is the inability obtain sufficient information about the Java level stack frames interpreted within the Java Virtual Machine. Unlike other sampling techiniques introduced, native profilers are not much use to profile applications running on the Java Virtual Machine where most of the code has not been compiled into native machine code by JIT compilation yet.
+Native profilers are tools utilizing the low level abstractions of the operating system to  profile the native binaries for the operating system. These profilers are superior to the previously described methods performance wise but fall short on the usefulness of the gathered information. The main downside of native profilers is the inability obtain sufficient information about the Java level stack frames interpreted within the Java Virtual Machine. Unlike other sampling techiniques introduced, native profilers are not much use to profile applications running on the Java Virtual Machine where most of the code has not been compiled into native machine code by JIT compilation yet.
 
 %\TODO{Add example of native call trace to show that it is kind of useless} \supervisor{To be fair, one would have to give a sample such as one used with perf-map-agent}
 
