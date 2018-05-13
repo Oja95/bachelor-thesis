@@ -105,10 +105,31 @@ Visualization of the profiling results from the benchmark run using this solutio
 \label{fig:shared-mem-results}
 \end{figure} 
 
-This approach is slighty less cumbersome to set up than installing a custom kernel as demonstrated in Section \ref{kernel-clock}. This solution has a different distribution of useful and non-useful samples compared to original implementation. Ideas describing this phenomenom are briefly covered in the Section \ref{sec:future-research}.
+This approach is slighty less cumbersome to set up than installing a custom kernel as demonstrated in Section \ref{kernel-clock}. 
 
 % the small percentage of useful samples of all samples obtained indicates to problems in this implementation which are 
 %provided solutions have a different distribution of useful and non-useful samples compared to original implementation
+\subsection{Solutions' comparison}
+All of the proposed solutions succeeded in extracting a larger amount of information from the benchmark test application when compared to the baseline benchmark run.
+The benchmark results for all the solutions are shown in Table \ref{table:results}. 
+
+\begin{table}[h]
+\centering
+\caption{Benchmark results of the solutions}
+\label{table:results}
+
+\begin{tabular}{l | c | c | c}
+ & Benchmark time  & Gathered samples&  Useful samples  \\
+ \hline
+Baseline & 59.83 & 19025 & 15130  \\
+Real time approach & 70.78 & 12723206 & 73982 \\
+Frequency increase & 61.82 & 70525 & 50937  \\
+External timekeeping & 63.85 & 746868 & 38775 
+\end{tabular}
+\end{table}
+
+It can be seen that the real time based and the external timekeeping solutions have a different distribution of useful and non-useful samples compared to original implementation. Ideas describing this phenomenom are briefly covered in the Section \ref{sec:future-research}.
+
 
 
 \end{document}
