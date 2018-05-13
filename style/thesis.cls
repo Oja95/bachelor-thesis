@@ -148,3 +148,6 @@
 
 \usepackage[yyyymmdd]{datetime}
 \newdateformat{dotdate}{\twodigit{\THEDAY}.\twodigit{\THEMONTH}.\THEYEAR}
+
+\usepackage{caption} 
+\captionsetup[table]{skip=5pt}

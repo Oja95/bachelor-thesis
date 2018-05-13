@@ -1,8 +1,7 @@
 \documentclass[..thesis.tex]{subfiles}
 
 \begin{document}
-\TODO{start with positive}
-This thesis did not focus on evaluating the accuracy of the provided solutions. For future studies, investigating the accuracy of the provided solutions based on the ideas brought out in the Mytkowicz's paper on profiler accuracy evaluation \cite{mytkowicz_evaluating_2010} could improve the practical value of these solutions.
+This thesis focuses on increasing the useful information output from the observed application but leaves evaluating the accuracy of the provided solutions out of scope. For future studies, investigating the accuracy of the provided solutions based on the ideas brought out in the Mytkowicz's paper on profiler accuracy evaluation \cite{mytkowicz_evaluating_2010} could improve the practical value of these solutions.
 
 %\supervisor{I would not call it a problem, that frames it in negativity. But it would be great to achieve the same rate as for default honest profiler or at least figure out what causes the increase. Currently, we just have a fact that there are, as a precentage, smaller number of ``useful'' numbers and no real explanation. Maybe it is normal, maybe it is bad :)}
 % \supervisor{Also, can we somehow tie this more strongly with the first paragraph? In essence, this thesis focused on pumping stuff out of JVM, next we would like to see if it is correct stuff.}
@@ -16,8 +15,7 @@ Additionally, during testing the solutions, an anomaly with large amount of unus
 \end{enumerate}
 
 Future studies could investigate the signals emitted and investigate the distribution of threads which are handling the signal and block the threads from handling the profiling signal as they will not provide usable stack traces for profiling results.
-For example, patching the main thread loop in the Java Virtual Machine initialization decreases the amount of unusable samples by a noticeable margin due to the fact that this thread can not handle the profiling signal sent by Honest Profiler. A promising idea would be to investigate the initialization of native threads within Java Virtual Machine and disable handling of the profiling signal.
-\TODO{describe that i did something good - patching thing}
+As part of an experiment, patching the main thread loop in the Java Virtual Machine initialization was done. The experiment proved to decrease the amount of unusable samples obtained by a noticeable margin due to the fact that this thread can not handle the profiling signal sent by Honest Profiler. A promising idea would be to further investigate the initialization of other native threads within Java Virtual Machine and disable handling of the profiling signal.
 
 %\begin{lstlisting}[language=C++,style=def,label={lst:sigmask}, caption={Blocking the \texttt{SIGPROF} signal for a thread}]
 %sigset_t mask;
