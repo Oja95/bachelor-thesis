@@ -9,7 +9,7 @@ This sections describes three different approaches for increasing the sampling f
 Benchmark test reads 10000000 random integers from an input file and then performs quicksort on the copy of the obtained list 10 times. For each solution, the benchmark is executed 10 times. Benchmark test code is included in Appendix \ref{A:benchmark-test-code}. 
 
 %\supervisor{frames of interest -- we should reference to definition we have given here imho. Forward reference to future research would be possible, but I would prefer to reference backwards.}
-Baseline of the test using the default implementation of the Honest Profiler finished the test in 59.83 seconds on average. During profiling, 19025 samples were obtained on average from which 15130 (81\%) contained useful and informative frames. Profiling results are visualized on the Figure ~\ref{fig:baseline} on page ~\pageref{fig:baseline}. 
+Baseline of the test using the default implementation of the Honest Profiler finished the test in 59.83 seconds on average. During profiling, 19025 samples were obtained on average from which 15130 (81\%) contained useful and informative frames. Profiling results are visualized in Figure ~\ref{fig:baseline} on page ~\pageref{fig:baseline}. 
 
 \begin{figure}[H]
 \includegraphics[scale=0.335]{baseline.png}
@@ -45,7 +45,7 @@ This can be accomplished by creating a custom configuration in the \texttt{Kconf
 
 Using the 1000 Hz kernel increases the sampling frequency as the CPU time based interval timer from GNU time library can now send an interrupt signal every $\frac{1}{1000} = 0.001$ seconds. Experiments with such kernel has shown four times increase in the amount of samples gathered wihtout causing significant performance overhead to the application under observation.
 
-Benchmark runs on such configuration had average execution time of 61.82 seconds during which 70525 samples were collected. 50937 of the samples (72\%) were useful and contained the application's stack frames in them. When comparing to the baseline bechmark results, this solution resulted in 336\% increase in useful samples with negligible performance overhead. Visualization from the benchmark's execution using such profiling configuration is shown on Figure ~\ref{fig:hz_increase}.
+Benchmark runs on such configuration had average execution time of 61.82 seconds during which 70525 samples were collected. 50937 of the samples (72\%) were useful and contained the application's stack frames in them. When comparing to the baseline bechmark results, this solution resulted in 336\% increase in useful samples with negligible performance overhead. Visualization from the benchmark's execution using such profiling configuration is shown in Figure ~\ref{fig:hz_increase}.
 \begin{figure}[H]
 \includegraphics[scale=0.375]{hz_increase.png}
 \caption{Visualization of the results from profiling with increased kernel timer frequency}
