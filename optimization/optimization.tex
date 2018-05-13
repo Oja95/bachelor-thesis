@@ -11,7 +11,7 @@ Benchmark test reads 10000000 random integers from an input file and then perfor
 %\supervisor{frames of interest -- we should reference to definition we have given here imho. Forward reference to future research would be possible, but I would prefer to reference backwards.}
 Baseline of the test using the default implementation of the Honest Profiler finished the test in 59.83 seconds on average. During profiling, 19025 samples were obtained on average from which 15130 (81\%) contained useful and informative frames. Profiling results are visualized on the Figure ~\ref{fig:baseline} on page ~\pageref{fig:baseline}. 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \includegraphics[scale=0.335]{baseline.png}
 \caption{Visualization of baseline benchmark profiling results}
 \label{fig:baseline}
@@ -30,7 +30,7 @@ Although this approach obtains considerably larger amount of samples due to high
 
 Similar issue occurs the other way around when the application's instructions are executed on multiple processor cores. There is a clear distinction in cases in which 4 processor cores are fully utilized when executing the application's instructions and cases in which a single processor core is used. The former scenario would get roughly four times as much work done when compared to the latter scenario. However, the real time based timer will not take these workload differences into account because it measures time based on the real world clock. This bias potentially introduces inaccuracy in the profiling results.
 
-Average benchmark's execution time using this method finished in 70.78 seconds and obtained up to 12.7 million (12723206) samples during its execution from which only 73982 (0.58\%) contained frames of interest. Whereas the 15\% increase in execution times is acceptable for gaining significantly larger amount of samples, it is unknown why only 0.58\% of the gathered samples contained frames of interest. This phenomenom is also further covered in the future research Section ~\ref{sec:future-research}. Visualization of the profiling results utilizing this method is presented in Figure ~\ref{fig:walltime}.
+Average benchmark's execution time using this method finished in 70.78 seconds and obtained up to 12.7 million (12723206) samples during its execution from which only 73982 (0.58\%) contained frames of interest. Whereas the 15\% increase in execution times is acceptable for gaining significantly larger amount of samples, it is unknown why only 0.58\% of the gathered samples contained frames of interest. This phenomenom is also further covered in the future research Section ~\ref{sec:future-research}. Visualization of the profiling results utilizing this method is presented in Figure \ref{fig:walltime} on page \pageref{fig:walltime}.
 \begin{figure}[H]
 \includegraphics[scale=0.27]{walltime.png}
 \caption{Visualization of real time based solution profiling results}
@@ -66,7 +66,7 @@ The external server process starts by creating a UNIX domain socket and waits fo
 
 Shared memory for interprocess communication is used due to its superior performance over other communication approaches such as file I/O (input/output) or UNIX domain sockets. 
 
-Figure \ref{fig:shared_mem_arctitecture} on page \pageref{fig:shared_mem_arctitecture} summarizes the architecture of this implementation.
+Figure \ref{fig:shared_mem_arctitecture} summarizes the architecture of this implementation.
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
@@ -98,7 +98,7 @@ Figure \ref{fig:shared_mem_arctitecture} on page \pageref{fig:shared_mem_arctite
 
 Testing shows that such modification for Honest Profiler runs the benchmark test in 63.85 seconds on average.  From running the benchmark test, a sample was obtained roughly after every 100 microseconds. 746868 samples were obtained during profiling and 38775 (5.2\%) of them were useful. This approach obtained 256\% more useful samples than the baseline benchmark.
 
-Visualization of the profiling results from the benchmark run using this solution is presented in Figure \ref{fig:shared-mem-results} on page \pageref{fig:shared-mem-results}.
+Visualization of the profiling results from the benchmark run using this solution is presented in Figure \ref{fig:shared-mem-results}.
 \begin{figure}[H]
 \includegraphics[scale=0.27]{shared_mem_results.png}
 \caption{Visualization of the external timekeeping based solution profiling results}
@@ -111,9 +111,9 @@ This approach is slighty less cumbersome to set up than installing a custom kern
 %provided solutions have a different distribution of useful and non-useful samples compared to original implementation
 \subsection{Solutions' comparison}
 All of the proposed solutions succeeded in extracting a larger amount of information from the benchmark test application when compared to the baseline benchmark run.
-The benchmark results for all the solutions are shown in Table \ref{table:results}. 
+The benchmark results for all the solutions are shown in Table \ref{table:results} on page \pageref{table:results}. 
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \caption{Benchmark results of the solutions}
 \label{table:results}
