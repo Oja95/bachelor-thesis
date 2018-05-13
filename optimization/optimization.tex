@@ -64,7 +64,7 @@ The external server process starts by creating a UNIX domain socket and waits fo
 	\item \texttt{SIGPROF} - call the \texttt{Async\-Get\-Call\-Trace} method to obtain a sample from the thread handling the signal
 \end{itemize}
 
-The external server process keeps track of the CPU time used by the profileable Java process and based on the CPU time consumed, sends the \texttt{SIGPROF} signals accordingly.
+The external server process keeps track of the CPU time used by the profileable Java process and when specified amount of CPU time has passed, the \texttt{SIGPROF} signal is sent.
 
 Shared memory for interprocess communication is used due to its superior performance over other communication approaches such as file I/O (input/output) or UNIX domain sockets. 
 
