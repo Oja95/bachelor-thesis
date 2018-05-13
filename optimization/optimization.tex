@@ -30,7 +30,7 @@ Although this approach obtains considerably larger amount of samples due to high
 
 Similar issue occurs the other way around when the application's instructions are executed on multiple processor cores. There is a clear distinction in cases in which 4 processor cores are fully utilized when executing the application's instructions and cases in which a single processor core is used. The former scenario would get roughly four times as much work done when compared to the latter scenario. However, the real time based timer will not take these workload differences into account because it measures time based on the real world clock. This bias potentially introduces inaccuracy in the profiling results.
 
-Average benchmark's execution time using this method finished in 70.78 seconds and obtained up to 12.7 million (12723206) samples during its execution from which only 73982 (0.58\%) contained frames of interest. Whereas the 15\% increase in execution times is acceptable for gaining significantly larger amount of samples, it is unknown why only 0.58\% of the gathered samples contained frames of interest. This phenomenom is also further covered in the future research Section ~\ref{sec:future-research}. Visualization of the profiling results utilizing this method is presented in Figure \ref{fig:walltime} on page \pageref{fig:walltime}.
+Average benchmark's execution time using this method finished in 70.78 seconds and obtained up to 12.7 million (12723206) samples during its execution from which only 73982 (0.58\%) contained frames of interest. Whereas the 15\% increase in execution times is acceptable for gaining significantly larger amount of samples, it is unknown why only 0.58\% of the gathered samples contained frames of interest. Visualization of the profiling results utilizing this method is presented in Figure \ref{fig:walltime} on page \pageref{fig:walltime}.
 \begin{figure}[H]
 \includegraphics[scale=0.27]{walltime.png}
 \caption{Visualization of real time based solution profiling results}
@@ -55,7 +55,7 @@ Benchmark runs on such configuration had average execution time of 61.82 seconds
 \subsubsection{External utility for timekeeping}
 \label{shared-mem}
 
-This approach moves the time measurement logic to an external server process which uses UNIX operating system signals and shared memory to communicate with Honest Profiler's threads within the profileable Java process. The solution is based on the fact that it is possible for a process to obtain the CPU time that the process has used without the limitations imposed by the kernel's internal timer frequency. The CPU time spent by a process can be obtained by calling the \texttt{clock\_\-gettime} function from the GNU time library. Essentially, the external utility serves as a CPU time based timer which enables calling \texttt{Async\-Get\-Call\-Trace} method more often than default implementation.
+This approach moves the time measurement logic to an external server process which uses UNIX operating system signals and shared memory to communicate with the profileable Java process, including the Honest Profiler's threads in it. The solution is based on the fact that it is possible for a process to obtain the CPU time that the process has used without the limitations imposed by the kernel's internal interrupt frequency. The CPU time spent by a process can be obtained by calling the \texttt{clock\_\-gettime} function from the GNU time library. Essentially, the external utility serves as a CPU time based timer which enables calling \texttt{Async\-Get\-Call\-Trace} method more often than default implementation.
 
 The external server process starts by creating a UNIX domain socket and waits for a connection. Upon a connection from a Java process with Honest Profiler's native agent attached, it obtains its process identifier (\textit{PID}) for signal sending purposes. The server process then allocates a memory section which is shared with the profileable Java process. Server will then use two signals to request action from the Honest Profiler that is attached to the Java process:
 
@@ -63,6 +63,8 @@ The external server process starts by creating a UNIX domain socket and waits fo
 	\item \texttt{SIGALRM} - write the used CPU time used by the Java process to the shared memory
 	\item \texttt{SIGPROF} - call the \texttt{Async\-Get\-Call\-Trace} method to obtain a sample from the thread handling the signal
 \end{itemize}
+
+The external server process keeps track of the CPU time used by the profileable Java process and based on the CPU time consumed, sends the \texttt{SIGPROF} signals accordingly.
 
 Shared memory for interprocess communication is used due to its superior performance over other communication approaches such as file I/O (input/output) or UNIX domain sockets. 
 
