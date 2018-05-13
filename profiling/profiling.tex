@@ -37,7 +37,7 @@ Although sampling profiling does not provide precise metrics for each method's e
 
 For sampling profilers, the result is a statistical approximation of the program's performance. Thus, having more samples will provide a more accurate approximation. 
 
-Figure \ref{fig:lowSampleCount} illustrates the problem which is caused by the low sampling interval. Suppose that the Figure \ref{fig:lowSampleCount} resembles a program's execution in which the horizontal axis represents the current program's call trace state in that particular moment in time. It can be observed that the amount of time spent in method Y is significantly larger than the amount of time that was spent in methods X and Z. Suppose that the sampling profiler obtains a sample at each dotted vertical line. Such profiling results would represent each method X, Y and Z with a single sample. This implies that all the methods spent roughly the same amount of time during the execution of the program. The result is inaccurate as the visualization clearly shows that method Y spent roughly 4 times more time than it was spent for executing methods X and Z.
+Figure \ref{fig:lowSampleCount} illustrates the problem which is caused by the low sampling interval. Suppose that the Figure \ref{fig:lowSampleCount} resembles a program's execution in which the horizontal axis represents the current program's call trace state in that particular moment in time. It can be observed that the amount of time spent in method Y is significantly larger than the amount of time that was spent in methods X and Z. The call trace samples containing the method Y in its top frame are colored red. Suppose that the sampling profiler obtains a sample at each dotted vertical line. Such profiling results would represent each method X, Y and Z with a single sample. This implies that all the methods spent roughly the same amount of time during the execution of the program. The result is inaccurate as the visualization clearly shows that method Y spent roughly 4 times more time than it was spent for executing methods X and Z.
 
 \begin{figure}[H]
 \centering
@@ -63,7 +63,7 @@ Figure \ref{fig:lowSampleCount} illustrates the problem which is caused by the l
 \label{fig:lowSampleCount}
 \end{figure}
 
-Increasing the sampling frequency would improve the situation as demonstrated on Figure \ref{fig:highSampleCount} on page \pageref{fig:highSampleCount}. Upon profiling with four times higher sampling frequency, it becomes apparent that method Y call trace samples have been proportionally represented in the total call trace samples. The call trace samples containing the method Y in its top frame are colored red.
+Increasing the sampling frequency would improve the situation as demonstrated on Figure \ref{fig:highSampleCount} on page \pageref{fig:highSampleCount}. Upon profiling with four times higher sampling frequency, it becomes apparent that method Y call trace samples have been proportionally represented in the total call trace samples.
 
 \begin{figure}[H]
 \centering
